@@ -1,0 +1,149 @@
+@import "tailwindcss";
+
+/*
+ * The warm arid palette from the art direction (§10). Kept here as design tokens
+ * so the UI and the canvas never drift apart — the Phaser side mirrors these in
+ * `src/game/config.ts`.
+ */
+@theme {
+  --color-ink: #17120e;
+  --color-ink-soft: #241c16;
+  --color-linen: #f0e2c8;
+  --color-sand: #d8b083;
+  --color-ochre: #c08b4a;
+  --color-terracotta: #a8503c;
+  --color-olive: #6b7050;
+  --color-indigo: #4a5a7a;
+
+  /* Fill colours sampled from the middle of each frame, used as the fallback
+     background so a panel is never see-through before the image loads. */
+  --color-frame-parchment: #bda57f;
+  --color-frame-panel: #3c2c1f;
+  --color-frame-dark: #1b1716;
+  /* Ink for text sitting on the parchment frame. */
+  --color-ink-brown: #2a1f14;
+
+  /* Departure Mono. `--font-pixel` is set on <html> by next/font in layout.tsx. */
+  --font-display: var(--font-pixel), ui-monospace, monospace;
+
+  /*
+   * Long-form reading — Scripture passages and Codex entries. Deliberately a
+   * separate token: it is the same pixel face today, but the Codex is where an
+   * all-caps pixel font would start to cost comprehension, and F7 may want a
+   * plainer face for body copy. Changing it here changes it everywhere.
+   */
+  --font-body: var(--font-pixel), ui-monospace, monospace;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-linen);
+  font-family: var(--font-display);
+  /* A pixel face should not be smoothed — antialiasing muddies the 1px stems. */
+  -webkit-font-smoothing: none;
+  font-smooth: never;
+  letter-spacing: 0.02em;
+}
+
+/* The canvas is pixel art; never let the browser smooth it. */
+canvas {
+  image-rendering: pixelated;
+}
+
+/*
+ * Framed panels — the brass text boxes.
+ *
+ * Nine-slice via `border-image`, so a frame keeps its screwed corners at any panel
+ * size. The slice is 58px because that is how far the corner bracket reaches into
+ * the source art; anything smaller would stretch the screws. `border-image-width`
+ * is then set well below the slice, which scales the corner down uniformly rather
+ * than distorting it, and keeps the brass from swamping a small panel.
+ *
+ * `fill` paints the middle slice too, so the panel's interior texture is part of
+ * the same image and lines up with the border without a seam.
+ */
+.frame {
+  border-style: solid;
+  border-width: 30px;
+  border-image-slice: 58 fill;
+  border-image-width: 30px;
+  border-image-repeat: stretch;
+}
+
+/* Text should not sit hard against the brass. */
+.frame > * {
+  position: relative;
+}
+
+.frame-parchment {
+  border-image-source: url("/art/frame-parchment.webp");
+  background-color: var(--color-frame-parchment);
+  color: var(--color-ink-brown);
+}
+
+.frame-panel {
+  border-image-source: url("/art/frame-panel.webp");
+  background-color: var(--color-frame-panel);
+}
+
+.frame-dark {
+  border-image-source: url("/art/frame-dark.webp");
+  background-color: var(--color-frame-dark);
+}
+
+/* A lighter-weight frame for compact panels, where 30px of brass is too much. */
+.frame-slim {
+  border-width: 20px;
+  border-image-width: 20px;
+}
+
+/* On a phone, 30px of brass on each side is a sixth of the screen. */
+@media (max-width: 640px) {
+  .frame {
+    border-width: 18px;
+    border-image-width: 18px;
+  }
+  .frame-slim {
+    border-width: 13px;
+    border-image-width: 13px;
+  }
+}
+
+/* Narrower still — small phones, and the game running inside a split pane. */
+@media (max-width: 420px) {
+  .frame {
+    border-width: 12px;
+    border-image-width: 12px;
+  }
+  .frame-slim {
+    border-width: 9px;
+    border-image-width: 9px;
+  }
+}
+
+/*
+ * Departure Mono is drawn on an 11px grid. Measured across sizes 8–36, edge
+ * softness bottoms out at 11, 22 and 33 and rises everywhere between, so these
+ * are the only sizes to reach for. Anything else renders mushy.
+ */
+.text-pixel-sm {
+  font-size: 11px;
+  line-height: 22px;
+}
+.text-pixel {
+  font-size: 22px;
+  line-height: 33px;
+}
+.text-pixel-lg {
+  font-size: 33px;
+  line-height: 44px;
+}
+.text-pixel-xl {
+  font-size: 44px;
+  line-height: 55px;
+}

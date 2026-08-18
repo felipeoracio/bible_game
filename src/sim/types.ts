@@ -1,0 +1,169 @@
+/**
+ * The simulation's vocabulary.
+ *
+ * Nothing in `src/sim` may import Phaser or React. This module is the reason the
+ * engine can be reused for Episode 2 without touching the rendering layers, and
+ * the reason the rules are testable without a browser.
+ *
+ * The content model — tiers, scripture refs, legs — lives in `src/content/types.ts`.
+ * This file is the runtime state that the simulation moves through.
+ */
+
+import type { CastMember, HouseholdEffect, Terrain } from "@/content/types";
+import { freshMember, type MemberState } from "./systems/household";
+import { emptySchedule, firstPooledAtKm, type LegSchedule } from "./systems/events";
+import { emptyQuizProgress, type QuizProgress } from "./systems/quiz";
+
+export type Pace = "steady" | "quick" | "driving";
+
+export const PACES: readonly Pace[] = ["steady", "quick", "driving"] as const;
+
+/** Kilometres covered per in-game hour at each pace. */
+export const PACE_SPEED_KMH: Record<Pace, number> = {
+  steady: 3,
+  quick: 4.5,
+  driving: 6,
+};
+
+export interface GameState {
+  /** Days elapsed since the departure from Rameses. Starts at 1. */
+  day: number;
+  /** The pace the household is keeping. */
+  pace: Pace;
+  /** Kilometres travelled within the current leg. */
+  distanceKm: number;
+  /** Length of the current leg. Reasoned, not recorded — see the content model. */
+  legDistanceKm: number;
+  /** Which leg of the itinerary the household is on. */
+  legId: string;
+  /** Ground being crossed. Sets movement cost and which scenery is drawn. */
+  terrain: Terrain;
+  /** The household, in marching order. */
+  household: MemberState[];
+  /** Kilometres since the last night in camp. */
+  kmSinceRest: number;
+  /**
+   * Who the player says these people are: a name and a chosen look for every
+   * member, not only the head. The roster in the content supplies the defaults.
+   */
+  identities: Record<string, MemberIdentity>;
+  /** Details that belong to the head alone. */
+  head: HeadDetails;
+  /**
+   * Every decision the player has taken, as event id to chosen option id. Later
+   * content reads this — it is what "carries forward" actually means.
+   */
+  decisions: Record<string, string>;
+  /** Nights spent in camp. Distinct from `day`, which also counts arrival days. */
+  nightsCamped: number;
+
+  // --- Events ---------------------------------------------------------------
+  /** The current leg's event configuration, copied in when the leg begins. */
+  schedule: LegSchedule;
+  /** Events already shown this run. Nothing fires twice. */
+  fired: string[];
+  /** Distance at which the next pooled event becomes eligible. */
+  nextPooledAtKm: number;
+  /** Advances on every chance roll, so a run replays identically from its seed. */
+  seed: number;
+  /**
+   * The event on screen, if any. While this is set the household stops walking —
+   * the march waits for the player, not the other way round.
+   */
+  activeEventId?: string;
+
+  // --- Codex ----------------------------------------------------------------
+  /** Entries the player has earned, in the order they were opened. */
+  unlockedCodex: string[];
+  /** Waypoint reached and not yet read. Set once, when the camp is first reached. */
+  arrivedAt?: string;
+
+  // --- Checkpoints ----------------------------------------------------------
+  /** First-try accuracy across the whole run, not just the current quiz. */
+  quiz: QuizProgress;
+  /** Checkpoint waiting to be taken, set on arrival and cleared when it is done. */
+  quizPending?: string;
+}
+
+/** A name and an appearance, chosen for one member of the household. */
+export interface MemberIdentity {
+  name: string;
+  /** Index into that member's appearance variants. */
+  look: number;
+}
+
+/** What the player sets for the head, beyond a name and a face. */
+export interface HeadDetails {
+  age: number;
+  /** A `TradeOption` id from the content. */
+  trade: string;
+}
+
+export type Action =
+  | { type: "SET_PACE"; pace: Pace }
+  | { type: "TRAVEL"; km: number }
+  | { type: "MAKE_CAMP" }
+  | {
+      type: "NAME_HOUSEHOLD";
+      identities: Record<string, MemberIdentity>;
+      head: HeadDetails;
+    }
+  | { type: "DECIDE"; eventId: string; choiceId: string; effects?: HouseholdEffect }
+  | { type: "DISMISS_EVENT" }
+  | { type: "DISMISS_WAYPOINT" }
+  | { type: "ANSWER"; questionId: string; correct: boolean }
+  | { type: "FINISH_QUIZ" };
+
+/**
+ * Takes only the shape it needs from a content `Leg`, so the simulation stays
+ * independent of the content model while still being driven by it.
+ */
+export function initialState(
+  leg: {
+    id: string;
+    distanceKm: number;
+    terrain: Terrain;
+    scripted?: LegSchedule["scripted"];
+    pool?: LegSchedule["pool"];
+    waypoint?: string;
+    unlocks?: string[];
+    eventUnlocks?: Record<string, string[]>;
+    quiz?: string;
+  },
+  household: CastMember[],
+  /** Fixed by default so a fresh run is reproducible; vary it per save later. */
+  seed = 0x5eed,
+): GameState {
+  return {
+    day: 1,
+    pace: "steady",
+    distanceKm: 0,
+    legDistanceKm: leg.distanceKm,
+    legId: leg.id,
+    terrain: leg.terrain,
+    household: household.map((member) => freshMember(member.id, member.role)),
+    kmSinceRest: 0,
+    decisions: {},
+    nightsCamped: 0,
+    schedule: {
+      scripted: leg.scripted ?? emptySchedule.scripted,
+      pool: leg.pool ?? emptySchedule.pool,
+      waypoint: leg.waypoint,
+      unlocks: leg.unlocks ?? [],
+      eventUnlocks: leg.eventUnlocks ?? {},
+      quizId: leg.quiz,
+    },
+    fired: [],
+    unlockedCodex: [],
+    quiz: emptyQuizProgress,
+    nextPooledAtKm: firstPooledAtKm(seed),
+    seed,
+    identities: Object.fromEntries(
+      household.map((member) => [member.id, { name: member.name, look: 0 }]),
+    ),
+    head: {
+      age: household.find((member) => member.role === "head")?.age ?? 35,
+      trade: "brickmaker",
+    },
+  };
+}

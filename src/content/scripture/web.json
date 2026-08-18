@@ -1,0 +1,50 @@
+{
+  "translation": {
+    "id": "web",
+    "name": "World English Bible",
+    "rights": "Public Domain",
+    "source": "bible-api.com",
+    "retrieved": "2026-08-16"
+  },
+  "books": {
+    "exodus": {
+      "name": "Exodus",
+      "chapters": {
+        "1": {
+          "11": "Therefore they set taskmasters over them to afflict them with their burdens. They built storage cities for Pharaoh: Pithom and Raamses.",
+          "12": "But the more they afflicted them, the more they multiplied and the more they spread out. They were grieved because of the children of Israel.",
+          "13": "The Egyptians ruthlessly made the children of Israel serve,",
+          "14": "and they made their lives bitter with hard service, in mortar and in brick, and in all kinds of service in the field, all their service, in which they ruthlessly made them serve."
+        },
+        "12": {
+          "29": "At midnight, Yahweh struck all the firstborn in the land of Egypt, from the firstborn of Pharaoh who sat on his throne to the firstborn of the captive who was in the dungeon; and all the firstborn of livestock.",
+          "30": "Pharaoh rose up in the night, he, and all his servants, and all the Egyptians; and there was a great cry in Egypt, for there was not a house where there was not one dead.",
+          "31": "He called for Moses and Aaron by night, and said, “Rise up, get out from among my people, both you and the children of Israel; and go, serve Yahweh, as you have said!",
+          "32": "Take both your flocks and your herds, as you have said, and be gone; and bless me also!”",
+          "33": "The Egyptians were urgent with the people, to send them out of the land in haste, for they said, “We are all dead men.”",
+          "34": "The people took their dough before it was leavened, their kneading troughs being bound up in their clothes on their shoulders.",
+          "35": "The children of Israel did according to the word of Moses; and they asked of the Egyptians jewels of silver, and jewels of gold, and clothing.",
+          "36": "Yahweh gave the people favor in the sight of the Egyptians, so that they let them have what they asked. They plundered the Egyptians.",
+          "37": "The children of Israel traveled from Rameses to Succoth, about six hundred thousand on foot who were men, besides children.",
+          "38": "A mixed multitude went up also with them, with flocks, herds, and even very much livestock.",
+          "39": "They baked unleavened cakes of the dough which they brought out of Egypt; for it wasn’t leavened, because they were thrust out of Egypt, and couldn’t wait, and they had not prepared any food for themselves.",
+          "40": "Now the time that the children of Israel lived in Egypt was four hundred thirty years.",
+          "41": "At the end of four hundred thirty years, to the day, all of Yahweh’s armies went out from the land of Egypt.",
+          "42": "It is a night to be much observed to Yahweh for bringing them out from the land of Egypt. This is that night of Yahweh, to be much observed of all the children of Israel throughout their generations."
+        }
+      }
+    },
+    "numbers": {
+      "name": "Numbers",
+      "chapters": {
+        "33": {
+          "1": "These are the journeys of the children of Israel, when they went out of the land of Egypt by their armies under the hand of Moses and Aaron.",
+          "2": "Moses wrote their goings out according to their journeys by the commandment of Yahweh. These are their journeys according to their goings out.",
+          "3": "They traveled from Rameses in the first month, on the fifteenth day of the first month; on the next day after the Passover, the children of Israel went out with a high hand in the sight of all the Egyptians,",
+          "4": "while the Egyptians were burying all their firstborn, whom Yahweh had struck among them. Yahweh also executed judgments on their gods.",
+          "5": "The children of Israel traveled from Rameses, and encamped in Succoth."
+        }
+      }
+    }
+  }
+}
