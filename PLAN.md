@@ -276,8 +276,50 @@ which F14 authors. That is the honest stopping point for this feature.
 
 Hunger numbers are tuned by feel, like the water and frailty numbers.
 
-**F11 · Failure states** — household fracture, falling behind the column, weaker endings.
-No random death. Death only at specific recorded events.
+**F11 · Failure states** — ✅ built and verified
+Household fracture, falling behind the column, weaker endings. No random death.
+*Done when:* a household can fail in ways that hurt, and none of them kill anyone or write
+a single person out of Israel.
+
+The constraint that shapes all three: **nobody dies and nobody leaves the Exodus.** Killing
+a family member at random is what the doc rules out; writing one out of Israel would be
+putting words in Scripture's mouth. So every failure here is survivable and reversible, and
+a test asserts the summaries never say anyone died or left.
+
+**Falling behind** (`sim/systems/column.ts`) has a sharp text anchor. Deuteronomy 25:18
+remembers that Amalek "struck the rearmost of you, all who were feeble behind you, when you
+were faint and weary" — the danger in the text lands specifically at the back of the column,
+so the game tracks a position rather than a score, and Rephidim (F12) collects on it.
+
+The balance decision is that **the column moves at exactly a steady walk.** A household in
+good order holds its place without ever being pushed, so falling behind is never a tax on
+choosing the sustainable pace — it is caused by wearing your family down. Speed is scaled by
+the *worst* member's condition, so a spent household cannot hold the column at any pace,
+including a driving one. Pushing hard is not merely cruel; below about a third condition it
+is slower. Walking Leg 1 four ways:
+
+| | no camp | one camp |
+|---|---|---|
+| **steady** | 2.7 km back, worst body 75 | 1.1 km back, body 89 |
+| **quick** | with the column, body 54 | with the column, body 78 |
+| **driving** | with the column, body 18 | with the column, body 52 |
+
+That is the trade the system exists to create: steady keeps your family whole and lets the
+column pull away; driving holds your place and destroys them. Neither is the right answer.
+
+**Fracture** (`sim/systems/fracture.ts`) — at trust 8 a member goes to walk with another
+household; they come back at 30. The gap is deliberate hysteresis, so somebody on the edge
+does not flicker in and out over one hard kilometre. They are never removed from the array.
+
+**The reckoning** (`sim/systems/reckoning.ts`) — read at every arrival, as a rehearsal of
+the episode ending. Not a pass or a fail: Israel reaches Sinai either way, and what varies
+is what you arrive with. The summary is generated from the actual counts, because
+`scattered` has two different causes and one sentence could not honestly cover both — the
+first version told a player that "most" of their household had left when one person had.
+Caught by looking at the screen, and now pinned by a test.
+
+Codex: "The back of the column", unlocked on Leg 1 since the column is there from the start.
+Deuteronomy 25:17-18 and Exodus 17:8-9 are bundled; `BookId` widened for Deuteronomy.
 
 **F12 · Set pieces** — four bespoke sequences, four different verbs: the crossing (held-breath
 traversal), Marah (scarcity resolved outside player control), Rephidim (defensive stand, the

@@ -2,6 +2,7 @@
 
 import { episode1 } from "@/content/episode1";
 import { AXIS_MAX, SUFFERING_THRESHOLD, weakest, type MemberState } from "@/sim/systems/household";
+import { estranged } from "@/sim/systems/fracture";
 import { useGame } from "@/state/store";
 
 /**
@@ -57,6 +58,7 @@ export default function PartyPanel() {
    * has quietly dropped is exactly the kind of work a family playing together should
    * not have to do.
    */
+  const gone = estranged(household);
   const struggling = weakest(household);
   const warn = struggling && struggling.condition <= SUFFERING_THRESHOLD ? struggling : undefined;
 
@@ -70,7 +72,11 @@ export default function PartyPanel() {
 
           return (
             <li key={member.id} className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1">
-              <span className="text-pixel-sm w-20 shrink-0 uppercase tracking-widest text-linen">
+              <span
+                className={`text-pixel-sm w-20 shrink-0 uppercase tracking-widest ${
+                  member.following ? "text-linen" : "text-linen/35 line-through"
+                }`}
+              >
                 {name}
               </span>
               {AXES.map((axis) => {
@@ -92,6 +98,19 @@ export default function PartyPanel() {
           );
         })}
       </ul>
+
+      {/*
+        Said in full rather than shown as an icon. Somebody in this family has
+        decided you are not worth following, and that should not be a status effect
+        the player has to hover over to understand.
+      */}
+      {gone.length > 0 && (
+        <p className="text-pixel-sm mt-3 text-terracotta" role="status">
+          {gone.map((member) => nameOf(member.id)).join(" and ")}{" "}
+          {gone.length === 1 ? "is" : "are"} walking with another household now. They are
+          still with Israel. Win back their trust and they will come back to your fire.
+        </p>
+      )}
 
       {warn && (
         <p className="text-pixel-sm mt-3 text-terracotta" role="status">

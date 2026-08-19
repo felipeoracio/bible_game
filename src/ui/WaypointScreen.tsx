@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { episode1 } from "@/content/episode1";
 import { useGame } from "@/state/store";
 import CodexEntryView from "./CodexEntryView";
+import { reckon } from "@/sim/systems/reckoning";
+import { POSITION_LABEL } from "@/sim/systems/column";
 
 /**
  * Arrival at a named camp.
@@ -17,6 +19,8 @@ export default function WaypointScreen() {
   const arrivedAt = useGame((s) => s.state.arrivedAt);
   const unlocked = useGame((s) => s.state.unlockedCodex);
   const legId = useGame((s) => s.state.legId);
+  const household = useGame((s) => s.state.household);
+  const lagKm = useGame((s) => s.state.lagKm);
   const dispatch = useGame((s) => s.dispatch);
   const router = useRouter();
 
@@ -24,6 +28,7 @@ export default function WaypointScreen() {
   if (!entry) return null;
 
   const leg = episode1.legs.find((candidate) => candidate.id === legId);
+  const standing = reckon(household, lagKm);
   const opened = unlocked.filter((id) => id !== arrivedAt);
 
   return (
@@ -37,6 +42,20 @@ export default function WaypointScreen() {
         <header className="text-pixel-sm uppercase tracking-widest text-ochre">
           You have reached {leg?.to ?? entry.title}
         </header>
+
+        {/*
+          How the household arrived — a rehearsal, at every camp, of the reckoning
+          the episode ends on. Said as a sentence about people rather than a score,
+          and never as a pass or a fail: Israel reaches Sinai either way, and what
+          varies is only what you arrive with.
+        */}
+        <section className="frame frame-panel flex flex-col gap-2" aria-label="How your household arrived">
+          <p className="text-pixel-sm uppercase tracking-widest text-linen/50">
+            {POSITION_LABEL[standing.position]} &middot; {standing.following} of{" "}
+            {standing.total} still with you
+          </p>
+          <p className="text-pixel-sm text-linen/85">{standing.summary}</p>
+        </section>
 
         <section className="frame frame-panel">
           <CodexEntryView

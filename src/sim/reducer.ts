@@ -4,6 +4,8 @@ import { nextEvent } from "./systems/events";
 import { recordAnswer } from "./systems/quiz";
 import { drink, refill, thirstPenalty, widenCapacity } from "./systems/water";
 import { dawn, eat, freshManna, gather, layAside } from "./systems/manna";
+import { advanceLag } from "./systems/column";
+import { settleAll } from "./systems/fracture";
 import type { Action, GameState } from "./types";
 
 /**
@@ -37,12 +39,21 @@ export function reduce(state: GameState, action: Action): GameState {
         drunk.household.map((member) => [member.id, thirstPenalty(member, walked)]),
       );
 
+      /*
+       * Lag is worked out from the household *before* this stretch wore them down,
+       * because the ground was covered at the speed they were managing at the time.
+       * Charging them for condition they only lost at the far end would double-count
+       * the same kilometres.
+       */
+      const lagKm = advanceLag(state.lagKm, drunk.household, walked, state.pace);
+
       const moved: GameState = {
         ...state,
         distanceKm,
+        lagKm,
         kmSinceRest: state.kmSinceRest + walked,
         water: drunk.water,
-        household: walkAll(drunk.household, walked, state.pace, thirstCost),
+        household: settleAll(walkAll(drunk.household, walked, state.pace, thirstCost)),
       };
 
       const triggered = nextEvent({
@@ -147,7 +158,7 @@ export function reduce(state: GameState, action: Action): GameState {
       // Recording the choice is the point; the effect is optional, because plenty
       // of decisions matter for what they unlock rather than what they cost.
       const household = action.effects
-        ? applyEffectAll(state.household, action.effects)
+        ? settleAll(applyEffectAll(state.household, action.effects))
         : state.household;
 
       // Scripted relief: the spring, the bitter pool made sweet, the rock. This is

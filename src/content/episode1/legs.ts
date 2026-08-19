@@ -32,7 +32,7 @@ export const legs: Leg[] = [
     pool: ["hotep-asks-to-walk", "a-strap-gives-way"],
     camp: ["camp-first-night"],
     waypoint: "succoth",
-    unlocks: ["how-far-was-it"],
+    unlocks: ["how-far-was-it", "the-rearmost"],
     quiz: "quiz-leg-01",
   },
 ];

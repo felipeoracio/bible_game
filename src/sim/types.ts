@@ -91,6 +91,13 @@ export interface GameState {
   /** Checkpoint waiting to be taken, set on arrival and cleared when it is done. */
   quizPending?: string;
 
+  // --- Falling behind -------------------------------------------------------
+  /**
+   * Kilometres behind the head of the column. Grows when the household cannot hold
+   * Israel's speed and shrinks when it makes the ground back up.
+   */
+  lagKm: number;
+
   // --- Manna ----------------------------------------------------------------
   /**
    * Days since manna first fell, 1-indexed. Zero until it begins — the seven-day
@@ -178,6 +185,7 @@ export function initialState(
     household: household.map((member) => freshMember(member.id, member.role)),
     kmSinceRest: 0,
     water: freshWater(),
+    lagKm: 0,
     mannaDay: 0,
     manna: freshManna(),
     decisions: {},

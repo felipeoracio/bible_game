@@ -491,3 +491,87 @@ describe("manna through the reducer", () => {
     });
   });
 });
+
+describe("falling behind, through the reducer", () => {
+  it("starts in among the column", () => {
+    expect(start().lagKm).toBe(0);
+  });
+
+  it("keeps a healthy household in place at a steady walk", () => {
+    const walked = reduce(start(), { type: "TRAVEL", km: 20 });
+    expect(walked.lagKm).toBeCloseTo(0);
+  });
+
+  /** The trap: drive them until they cannot walk, and the column leaves anyway. */
+  it("drops a spent household behind however hard it is driven", () => {
+    const spent: GameState = {
+      ...start(),
+      pace: "driving",
+      household: start().household.map((m) => ({ ...m, condition: 12 })),
+    };
+    const walked = reduce(spent, { type: "TRAVEL", km: 10 });
+    expect(walked.lagKm).toBeGreaterThan(0);
+  });
+
+  it("lets a recovered household make the ground back up", () => {
+    const behind: GameState = { ...start(), lagKm: 6, pace: "driving" };
+    const walked = reduce(behind, { type: "TRAVEL", km: 10 });
+    expect(walked.lagKm).toBeLessThan(6);
+  });
+
+  it("never puts the household in front of Israel", () => {
+    const s = reduce({ ...start(), pace: "driving" }, { type: "TRAVEL", km: 15 });
+    expect(s.lagKm).toBe(0);
+  });
+});
+
+describe("the household coming apart, through the reducer", () => {
+  it("keeps everyone following on an ordinary march", () => {
+    const walked = reduce(start(), { type: "TRAVEL", km: 15 });
+    for (const member of walked.household) expect(member.following).toBe(true);
+  });
+
+  it("loses whoever a decision pushes past the end of their trust", () => {
+    const strained: GameState = {
+      ...start(),
+      household: start().household.map((m) => ({ ...m, trust: 10 })),
+    };
+    const after = reduce(strained, {
+      type: "DECIDE",
+      eventId: "the-crossing",
+      choiceId: "push-on",
+      effects: { trust: -5 },
+    });
+    for (const member of after.household) expect(member.following).toBe(false);
+  });
+
+  /** Nobody dies and nobody leaves Israel — the household is the same size after. */
+  it("never removes anyone from the household", () => {
+    const before = start();
+    const broken: GameState = {
+      ...before,
+      household: before.household.map((m) => ({ ...m, trust: 0 })),
+    };
+    const after = reduce(broken, {
+      type: "DECIDE",
+      eventId: "the-crossing",
+      choiceId: "push-on",
+      effects: { trust: -1 },
+    });
+    expect(after.household).toHaveLength(before.household.length);
+  });
+
+  it("takes them back once trust is properly rebuilt", () => {
+    const gone: GameState = {
+      ...start(),
+      household: start().household.map((m) => ({ ...m, trust: 28, following: false })),
+    };
+    const after = reduce(gone, {
+      type: "DECIDE",
+      eventId: "the-crossing",
+      choiceId: "wait",
+      effects: { trust: 5 },
+    });
+    for (const member of after.household) expect(member.following).toBe(true);
+  });
+});

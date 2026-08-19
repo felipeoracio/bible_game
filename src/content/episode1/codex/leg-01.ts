@@ -45,6 +45,15 @@ export const leg01Codex: CodexEntry[] = [
     related: ["succoth"],
   },
   {
+    id: "the-rearmost",
+    title: "The back of the column",
+    kind: "note",
+    note: "Israel left Egypt as one enormous body of people, and a body that size does not move evenly. Some families were near the front. Some were a long way back. Moses is told to remember, much later, what Amalek did on the road out of Egypt: he came at the rear and struck the ones who were lagging, the feeble and the worn out, when everybody was faint and weary. That is why this game keeps track of where your household is walking. Falling behind is not a score going down. It is a place in the line, and the text is clear that it was a dangerous one.",
+    provenance: recorded(ref("deuteronomy", 25, "17-18")),
+    passages: [ref("deuteronomy", 25, "17-18")],
+    related: ["how-far-was-it", "succoth"],
+  },
+  {
     id: "water-in-the-wilderness",
     title: "Water in the wilderness",
     kind: "note",

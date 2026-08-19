@@ -11,7 +11,7 @@
  */
 
 /** Books cited so far. Widen as later legs and episodes need more. */
-export type BookId = "exodus" | "numbers";
+export type BookId = "exodus" | "numbers" | "deuteronomy";
 
 export interface ScriptureRef {
   book: BookId;

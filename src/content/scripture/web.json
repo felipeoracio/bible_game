@@ -47,7 +47,9 @@
           "4": "Moses cried to Yahweh, saying, “What shall I do with these people? They are almost ready to stone me.”",
           "5": "Yahweh said to Moses, “Walk on before the people, and take the elders of Israel with you, and take the rod in your hand with which you struck the Nile, and go.",
           "6": "Behold, I will stand before you there on the rock in Horeb. You shall strike the rock, and water will come out of it, that the people may drink.” Moses did so in the sight of the elders of Israel.",
-          "7": "He called the name of the place Massah, and Meribah, because the children of Israel quarreled, and because they tested Yahweh, saying, “Is Yahweh among us, or not?”"
+          "7": "He called the name of the place Massah, and Meribah, because the children of Israel quarreled, and because they tested Yahweh, saying, “Is Yahweh among us, or not?”",
+          "8": "Then Amalek came and fought with Israel in Rephidim.",
+          "9": "Moses said to Joshua, “Choose men for us, and go out, fight with Amalek. Tomorrow I will stand on the top of the hill with God’s rod in my hand.”"
         }
       }
     },
@@ -60,6 +62,15 @@
           "3": "They traveled from Rameses in the first month, on the fifteenth day of the first month; on the next day after the Passover, the children of Israel went out with a high hand in the sight of all the Egyptians,",
           "4": "while the Egyptians were burying all their firstborn, whom Yahweh had struck among them. Yahweh also executed judgments on their gods.",
           "5": "The children of Israel traveled from Rameses, and encamped in Succoth."
+        }
+      }
+    },
+    "deuteronomy": {
+      "name": "Deuteronomy",
+      "chapters": {
+        "25": {
+          "17": "Remember what Amalek did to you by the way as you came out of Egypt;",
+          "18": "how he met you by the way, and struck the rearmost of you, all who were feeble behind you, when you were faint and weary; and he didn’t fear God."
         }
       }
     }

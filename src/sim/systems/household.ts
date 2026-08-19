@@ -26,6 +26,15 @@ export interface MemberState {
    * that the player cannot solve by resting (§5.3).
    */
   water: number;
+  /**
+   * Whether this person is still walking with *you*.
+   *
+   * Never whether they are alive, and never whether they are still with Israel —
+   * the game does not kill anyone and does not write people out of the Exodus. A
+   * member who stops following has gone to walk with another household, and can be
+   * won back. See `systems/fracture.ts`.
+   */
+  following: boolean;
 }
 
 export const AXIS_MAX = 100;
@@ -66,7 +75,15 @@ const clamp = (value: number): number => Math.min(AXIS_MAX, Math.max(0, value));
 
 /** A member at the start of the journey: rested, hopeful, and willing to follow. */
 export function freshMember(id: string, role: HouseholdRole): MemberState {
-  return { id, role, condition: AXIS_MAX, morale: AXIS_MAX, trust: 80, water: AXIS_MAX };
+  return {
+    id,
+    role,
+    condition: AXIS_MAX,
+    morale: AXIS_MAX,
+    trust: 80,
+    water: AXIS_MAX,
+    following: true,
+  };
 }
 
 /**
