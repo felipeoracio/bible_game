@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { episode1 } from "@/content/episode1";
 import CampScreen from "./CampScreen";
 import EventOverlay from "./EventOverlay";
@@ -10,6 +10,7 @@ import WaypointScreen from "./WaypointScreen";
 import GameCanvas from "./GameCanvas";
 import Hud from "./Hud";
 import PartyPanel from "./PartyPanel";
+import { useGame } from "@/state/store";
 
 /**
  * The journey screen. Owns whether the camp overlay is open, which is the only
@@ -21,7 +22,17 @@ import PartyPanel from "./PartyPanel";
  */
 export default function PlayScreen() {
   const [camping, setCamping] = useState(false);
+  const rehydrate = useGame((s) => s.rehydrate);
   const leg = episode1.legs[0];
+
+  /*
+   * Pick the run back up after a refresh. The store lives in memory, so without
+   * this a reload silently replaces the player's household with a fresh one — the
+   * single most annoying thing about the game before saves existed.
+   */
+  useEffect(() => {
+    rehydrate();
+  }, [rehydrate]);
 
   return (
     /*

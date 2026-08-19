@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { readRuns } from "@/state/storage";
 
 interface MenuItem {
   label: string;
@@ -9,8 +10,10 @@ interface MenuItem {
 }
 
 /**
- * Entries without an `href` render greyed out — the standard convention for a
- * menu whose options are not available yet. Continue lights up with the save system.
+ * Entries without an `href` render greyed out — the standard convention for a menu
+ * whose options are not available yet. Continue is filled in after mount, once
+ * there is actually a saved journey to take up; the page is prerendered, so
+ * reading storage during render would mismatch the server's HTML.
  */
 const ITEMS: MenuItem[] = [
   { label: "Begin the march", href: "/opening" },
@@ -23,14 +26,24 @@ const ITEM_BASE =
 
 export default function MainMenu() {
   const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const [hasSaves, setHasSaves] = useState(false);
+
+  useEffect(() => {
+    setHasSaves(readRuns().length > 0);
+  }, []);
+
+  const items = ITEMS.map((item) =>
+    item.label === "Continue" && hasSaves ? { ...item, href: "/continue" } : item,
+  );
 
   // Enabled items only — arrow keys skip what cannot be chosen.
-  const enabledIndexes = ITEMS.map((item, i) => (item.href ? i : -1)).filter((i) => i >= 0);
+  const enabledIndexes = items.map((item, i) => (item.href ? i : -1)).filter((i) => i >= 0);
 
   useEffect(() => {
     const first = enabledIndexes[0];
     if (first !== undefined) itemRefs.current[first]?.focus();
-    // Run once on mount; the menu never changes shape at runtime.
+    // Focus the first option once, on mount. Lighting Continue up later must not
+    // yank focus away from whatever the player has already arrowed to.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -77,7 +90,7 @@ export default function MainMenu() {
 
         <nav aria-label="Main menu">
           <ul className="flex flex-col items-center gap-3">
-            {ITEMS.map((item, index) =>
+            {items.map((item, index) =>
               item.href ? (
                 <li key={item.label}>
                   <Link

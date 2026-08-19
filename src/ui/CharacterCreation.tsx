@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { episode1 } from "@/content/episode1";
 import { lookAsset, PARTY, VARIANTS_PER_KIND } from "@/game/party";
 import type { MemberIdentity } from "@/sim/types";
@@ -43,16 +43,27 @@ const ROLE_LABEL: Record<string, string> = {
 export default function CharacterCreation() {
   const router = useRouter();
   const dispatch = useGame((s) => s.dispatch);
-  const startingIdentities = useGame((s) => s.state.identities);
-  const startingHead = useGame((s) => s.state.head);
-
-  const [identities, setIdentities] = useState<Record<string, MemberIdentity>>(() => ({
-    ...startingIdentities,
-  }));
-  const [age, setAge] = useState(startingHead.age);
-  const [trade, setTrade] = useState(startingHead.trade);
-
+  const reset = useGame((s) => s.reset);
+  const beginRun = useGame((s) => s.beginRun);
   const roster = episode1.household;
+
+  /*
+   * Seeded from the roster rather than from live state. Reading the store here
+   * meant that starting a new journey straight after loading an old one pre-filled
+   * the form with the previous household's names.
+   */
+  const [identities, setIdentities] = useState<Record<string, MemberIdentity>>(() =>
+    Object.fromEntries(roster.map((member) => [member.id, { name: member.name, look: 0 }])),
+  );
+  const [age, setAge] = useState(
+    () => roster.find((member) => member.role === "head")?.age ?? 35,
+  );
+  const [trade, setTrade] = useState("brickmaker");
+
+  // Clear whatever run was in memory, so this one starts from nothing.
+  useEffect(() => {
+    reset();
+  }, [reset]);
 
   const set = (id: string, patch: Partial<MemberIdentity>) =>
     setIdentities((current) => ({
@@ -77,6 +88,12 @@ export default function CharacterCreation() {
       ]),
     );
     dispatch({ type: "NAME_HOUSEHOLD", identities: trimmed, head: { age, trade } });
+    /*
+     * A slot is claimed only once the household actually has names — that is the
+     * first moment there is anything worth saving, and it keeps the Continue list
+     * free of anonymous runs from someone who opened the screen and backed out.
+     */
+    beginRun();
     router.push("/play");
   };
 

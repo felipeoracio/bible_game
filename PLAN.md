@@ -326,8 +326,48 @@ traversal), Marah (scarcity resolved outside player control), Rephidim (defensiv
 battle turns on something the player sees but does not cause), Jethro (camp reorganisation,
 player assigned to a named judge who persists).
 
-**F13 · Save and progression** — localStorage first, schema-versioned. Multiple household
-profiles, since this is played by families.
+**F13 · Save and progression** — ✅ built and verified
+localStorage, schema-versioned. Multiple household profiles, since this is played by
+families.
+*Done when:* a reload no longer costs the player their household, several families can keep
+separate journeys on one browser, and no save file — however mangled — can crash the game.
+
+The governing assumption is that **a save file is untrusted input.** It lives in
+localStorage where any curious ten-year-old with dev tools can edit it, and it may have been
+written by an older build. So `restore` works by laying *validated* values over a freshly
+initialised state: a truncated, corrupted, or hand-edited save degrades into a playable game
+rather than a crash or a household with NaN for its condition. Specifically it cannot add a
+person to the family, change somebody's role, put an axis outside 0–100, strand the player
+past the end of a leg, carry more water than the skins hold, or forge a perfect quiz record
+with a string.
+
+The leg's **schedule, distance and terrain are deliberately not saved** and are rebuilt from
+content, so a run saved before a content fix picks the fix up.
+
+`src/sim/save.ts` is pure — no browser, no content imports — and `src/state/storage.ts` is
+the only module in the game that touches localStorage. It has to survive three things that
+are all normal and none of which are the player's fault: server rendering during the
+prerender, storage being unavailable (private browsing, full quota), and a file from another
+build.
+
+Two things worth not undoing:
+
+- **A file this build cannot read is moved aside, never destroyed.** The Continue screen
+  tells a player with a newer save to update and their journeys will open — and the first
+  version of this then overwrote that file the moment they started a new game, which made
+  the message a lie. Found by planting a newer-version file in the browser and starting a
+  journey. Backups go to `SAVE_KEY/unreadable-backup` and the earliest one is never
+  overwritten.
+- **Autosave is throttled to two seconds.** `TRAVEL` fires every animation frame, so saving
+  per dispatch would serialise the whole run sixty times a second.
+
+A slot is claimed only once the household has names, so the Continue list never fills with
+anonymous runs from someone who opened creation and backed out. Deleting takes two taps —
+a child clicking around the menu should not be able to wipe a sibling's journey.
+
+Character creation now seeds its form from the roster rather than from live state; reading
+the store meant starting a new journey straight after loading an old one pre-filled the form
+with the previous household's names.
 
 ### Phase C — Content and ship
 
