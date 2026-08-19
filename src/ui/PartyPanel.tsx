@@ -16,6 +16,9 @@ const AXES = [
   { key: "condition", label: "Body", colour: "bg-olive" },
   { key: "morale", label: "Spirit", colour: "bg-ochre" },
   { key: "trust", label: "Trust", colour: "bg-indigo" },
+  // Water sits alongside the three axes rather than among them: it is a supply
+  // problem, not a state of mind, and resting does nothing for it.
+  { key: "water", label: "Water", colour: "bg-sand" },
 ] as const satisfies readonly { key: keyof MemberState; label: string; colour: string }[];
 
 /** Warn at a quarter and again at a tenth, so trouble is visible before it is a crisis. */

@@ -139,6 +139,11 @@ distributed, because there is nothing to distribute until water (F9) and manna (
 exist — the camp screen has an obvious slot for it. And the **Codex "read more" on every
 term** waits on F7, which is what builds the Codex reader.
 
+Water now exists (F9) and that slot is still empty on purpose. Camp must never become a
+place the player tops up the skins — the whole pressure system depends on supply being
+outside their hands. If anything lands in that slot it is rationing (deciding who drinks
+first on a bad night), not resupply.
+
 `decisions: Record<eventId, choiceId>` on the game state is what "carries forward"
 means, and F6 uses the same record and the same `DECIDE` action for road events. Choices
 can carry a small `HouseholdEffect`; the numbers are deliberately tiny, since no single
@@ -194,8 +199,43 @@ cosmetic layer to reward with yet.
 
 ### Phase B — Core systems
 
-**F9 · Water** — per-member tracking, faster drain in heat and at fast pace, resolved at
-scripted points the player does not control (Marah, Rephidim). The genuine pressure system.
+**F9 · Water** — ✅ built and verified
+Per-member hydration, faster drain in heat and at fast pace, resolved only at scripted
+points the player does not control. The genuine pressure system.
+*Done when:* water drains at a rate the player can feel, the HUD warns before it is a
+crisis, thirst costs the household condition, and nothing in the UI can refill the skins.
+
+The load-bearing constraint is `refill()` in `src/sim/systems/water.ts` — the only function
+that raises litres, and it is reachable exclusively from content via a choice's
+`provisions`. There is no refill button, no shop, no forage action. That is what makes
+Marah and the rock at Rephidim land as relief rather than cutscene: the player has spent
+the whole leg unable to solve the problem.
+
+Three things follow from that and are worth not undoing later:
+- **The HUD shows days, not litres.** "About two days left at this pace" is the decision;
+  "11.7 L" is trivia. It re-reads whenever pace or terrain changes, so switching to driving
+  visibly costs days without a single step being taken.
+- **Thirst is a fourth track on the household, not a fourth axis.** It sits beside Body,
+  Spirit and Trust in the panel but is deliberately not one of them — resting does nothing
+  for it, and it is a supply problem rather than a state of mind.
+- **Children and elders dry out fastest.** Same frailty ordering as the march, for the same
+  reason: the household is a family, not a squad.
+
+Leg 1 gained `the-last-canal` at 88% — the last easy water before the country turns dry,
+reasoned from delta geography rather than cited, since Exodus 13:20 puts the edge of the
+wilderness on the *next* stage. It exists so the mechanic teaches itself on the only
+playable leg: fill everything and pay in condition, or travel light and arrive thin.
+Walking the leg four ways gives 4.0 / 3.7 / 2.4 / 1.7 days of water on arrival — pace and
+provisioning both matter, and nobody goes parched, which is correct. **No water crisis is
+recorded until Marah**, so leg 1 must not manufacture one.
+
+Marah and Rephidim are the relief points the system is built for, and they need legs 5 and
+11 — so the payoff does not exist until F14. Exodus 15:22-27 and 17:1-7 are bundled now and
+the Codex entry "Water in the wilderness" cites them, which is as far as this can go until
+the legs are authored.
+
+Drain rates are still tuned by feel, not research — flagged with the other unresearched
+numbers below.
 
 **F10 · Manna** — the signature mechanic from Exodus 16. Morning gathering minigame, one
 omer per person, hoarded manna spoils overnight, double portion holds on the sixth day only,

@@ -2,6 +2,7 @@ import { restAll, walkAll } from "./systems/household";
 import { applyEffectAll } from "./systems/camp";
 import { nextEvent } from "./systems/events";
 import { recordAnswer } from "./systems/quiz";
+import { drink, refill, thirstPenalty, widenCapacity } from "./systems/water";
 import type { Action, GameState } from "./types";
 
 /**
@@ -25,11 +26,22 @@ export function reduce(state: GameState, action: Action): GameState {
       const walked = distanceKm - state.distanceKm;
       if (walked <= 0) return state;
 
+      /*
+       * Drink first, then walk. The thirst penalty is read from hydration *after*
+       * drinking, so a household with water in the skins pays nothing extra and a
+       * household without pays for every kilometre of it.
+       */
+      const drunk = drink(state.water, state.household, walked, state.pace, state.terrain);
+      const thirstCost = Object.fromEntries(
+        drunk.household.map((member) => [member.id, thirstPenalty(member, walked)]),
+      );
+
       const moved: GameState = {
         ...state,
         distanceKm,
         kmSinceRest: state.kmSinceRest + walked,
-        household: walkAll(state.household, walked, state.pace),
+        water: drunk.water,
+        household: walkAll(drunk.household, walked, state.pace, thirstCost),
       };
 
       const triggered = nextEvent({
@@ -90,9 +102,21 @@ export function reduce(state: GameState, action: Action): GameState {
       const household = action.effects
         ? applyEffectAll(state.household, action.effects)
         : state.household;
+
+      // Scripted relief: the spring, the bitter pool made sweet, the rock. This is
+      // the only path by which the household ever gains water.
+      let water = state.water;
+      if (action.provisions?.waterCapacity) {
+        water = widenCapacity(water, action.provisions.waterCapacity);
+      }
+      if (action.provisions?.water) {
+        water = refill(water, action.provisions.water);
+      }
+
       return {
         ...state,
         household,
+        water,
         decisions: { ...state.decisions, [action.eventId]: action.choiceId },
         /*
          * Deciding deliberately leaves the event open. The player has to be able to

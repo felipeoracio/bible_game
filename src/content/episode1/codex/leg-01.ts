@@ -45,6 +45,15 @@ export const leg01Codex: CodexEntry[] = [
     related: ["succoth"],
   },
   {
+    id: "water-in-the-wilderness",
+    title: "Water in the wilderness",
+    kind: "note",
+    note: "Three days out from the sea they found no water, and when they did find some it was bitter — so bitter the place was named for it. Later, at Rephidim, there was no water at all, and the people quarrelled with Moses over it. Thirst is not background detail in this account; it is one of the things the text keeps coming back to. That is why water in this game is something you can spend and never something you can go and fetch. How fast the skins empty is up to you — the pace you keep and the ground you cross. When they fill again is up to the story.",
+    provenance: recorded(ref("exodus", 15, "22-23"), ref("exodus", 17, "1")),
+    passages: [ref("exodus", 15, "22-25"), ref("exodus", 17, "1-6")],
+    related: ["how-far-was-it", "succoth"],
+  },
+  {
     id: "how-far-was-it",
     title: "How far was it?",
     kind: "note",

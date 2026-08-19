@@ -20,6 +20,12 @@ export interface MemberState {
   morale: number;
   /** 0 to 100. Whether they believe you are leading them well. */
   trust: number;
+  /**
+   * 0 to 100. How well watered they are. Separate from condition because thirst
+   * is the crisis the text keeps returning to, and it has its own supply problem
+   * that the player cannot solve by resting (§5.3).
+   */
+  water: number;
 }
 
 export const AXIS_MAX = 100;
@@ -60,7 +66,7 @@ const clamp = (value: number): number => Math.min(AXIS_MAX, Math.max(0, value));
 
 /** A member at the start of the journey: rested, hopeful, and willing to follow. */
 export function freshMember(id: string, role: HouseholdRole): MemberState {
-  return { id, role, condition: AXIS_MAX, morale: AXIS_MAX, trust: 80 };
+  return { id, role, condition: AXIS_MAX, morale: AXIS_MAX, trust: 80, water: AXIS_MAX };
 }
 
 /**
@@ -71,11 +77,19 @@ export function freshMember(id: string, role: HouseholdRole): MemberState {
  * choice the player is making. F6 adds the text-anchored drivers, where trust
  * responds to whether your choices matched the instruction that was given.
  */
-export function walk(member: MemberState, km: number, pace: Pace): MemberState {
+export function walk(
+  member: MemberState,
+  km: number,
+  pace: Pace,
+  /** Extra condition cost from thirst, computed by the water system. */
+  thirstCost = 0,
+): MemberState {
   if (km <= 0) return member;
 
   const frailty = FRAILTY[member.role];
-  const condition = clamp(member.condition - km * CONDITION_PER_KM[pace] * frailty);
+  const condition = clamp(
+    member.condition - km * CONDITION_PER_KM[pace] * frailty - thirstCost,
+  );
 
   let moraleLoss = km * MORALE_PER_KM[pace] * frailty;
   // Being worn down is demoralising on its own, and compounds the further it goes.
@@ -104,9 +118,15 @@ export function rest(member: MemberState): MemberState {
   };
 }
 
-export function walkAll(household: MemberState[], km: number, pace: Pace): MemberState[] {
+export function walkAll(
+  household: MemberState[],
+  km: number,
+  pace: Pace,
+  /** Per-member thirst cost, keyed by id. */
+  thirstCost: Record<string, number> = {},
+): MemberState[] {
   if (km <= 0) return household;
-  const next = household.map((member) => walk(member, km, pace));
+  const next = household.map((member) => walk(member, km, pace, thirstCost[member.id] ?? 0));
   return next.some((member, i) => member !== household[i]) ? next : household;
 }
 

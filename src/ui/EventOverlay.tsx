@@ -23,6 +23,7 @@ export default function EventOverlay() {
       eventId: event.id,
       choiceId: choice.id,
       effects: choice.effects,
+      provisions: choice.provisions,
     });
 
   return (

@@ -126,6 +126,20 @@ export interface HouseholdEffect {
   trust?: number;
 }
 
+/**
+ * Supplies a choice hands the household.
+ *
+ * The only route by which water ever increases. Deliberately content-only: there
+ * is no button anywhere that refills the skins, because §5.3's whole point is that
+ * the player controls how fast water runs out and never when more arrives.
+ */
+export interface Provisions {
+  /** Litres found. Anything over what they can carry is left behind. */
+  water?: number;
+  /** Extra carrying capacity, in litres — more skins taken instead of something else. */
+  waterCapacity?: number;
+}
+
 export interface Choice {
   id: string;
   label: string;
@@ -133,6 +147,7 @@ export interface Choice {
   /** Shown after the choice is taken. */
   outcome: string;
   effects?: HouseholdEffect;
+  provisions?: Provisions;
 }
 
 export interface GameEvent {

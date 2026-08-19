@@ -3,6 +3,7 @@
 import { episode1 } from "@/content/episode1";
 import { legProgress } from "@/sim/reducer";
 import { PACES, type Pace } from "@/sim/types";
+import { daysOfWaterLeft } from "@/sim/systems/water";
 import { useGame } from "@/state/store";
 
 const PACE_LABEL: Record<Pace, string> = {
@@ -24,9 +25,21 @@ export default function Hud({ onMakeCamp }: { onMakeCamp: () => void }) {
   const legDistanceKm = useGame((s) => s.state.legDistanceKm);
   const legId = useGame((s) => s.state.legId);
   const kmSinceRest = useGame((s) => s.state.kmSinceRest);
+  const water = useGame((s) => s.state.water);
+  const household = useGame((s) => s.state.household);
+  const terrain = useGame((s) => s.state.terrain);
   const dispatch = useGame((s) => s.dispatch);
 
   const leg = episode1.legs.find((candidate) => candidate.id === legId);
+
+  /*
+   * Water is shown as days of walking rather than litres, because litres mean
+   * nothing to a player and "two days left" is the decision they actually face.
+   */
+  const daysLeft = daysOfWaterLeft(water, household, pace, terrain);
+  const waterFraction = water.capacity > 0 ? water.litres / water.capacity : 0;
+  const waterTone =
+    daysLeft < 1 ? "text-terracotta" : daysLeft < 2 ? "text-ochre" : "text-linen/70";
   const progress = legProgress({ distanceKm, legDistanceKm });
   const arrived = progress >= 1;
 
@@ -36,6 +49,32 @@ export default function Hud({ onMakeCamp }: { onMakeCamp: () => void }) {
         <span className="text-ochre">Day {day}</span>
         <span className="text-linen/70">
           {distanceKm.toFixed(1)} of {legDistanceKm} km
+        </span>
+      </div>
+
+      {/*
+        The skins. Only scripted relief ever refills these, so this readout is a
+        warning rather than a resource the player can go and top up.
+      */}
+      <div className="text-pixel-sm flex flex-wrap items-center gap-x-3 gap-y-1">
+        <span className="uppercase tracking-widest text-linen/50">Water</span>
+        <span
+          className="inline-block h-3 w-28 border-2 border-ochre/30 bg-ink"
+          role="progressbar"
+          aria-label="Water carried"
+          aria-valuenow={Math.round(waterFraction * 100)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+        >
+          <span
+            className={`block h-full ${daysLeft < 1 ? "bg-terracotta" : "bg-indigo"}`}
+            style={{ width: `${Math.max(0, Math.min(1, waterFraction)) * 100}%` }}
+          />
+        </span>
+        <span className={waterTone}>
+          {water.litres < 0.1
+            ? "the skins are empty"
+            : `about ${daysLeft < 1 ? "less than a day" : `${Math.floor(daysLeft)} day${Math.floor(daysLeft) === 1 ? "" : "s"}`} left at this pace`}
         </span>
       </div>
 

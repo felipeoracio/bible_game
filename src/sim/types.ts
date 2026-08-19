@@ -9,10 +9,11 @@
  * This file is the runtime state that the simulation moves through.
  */
 
-import type { CastMember, HouseholdEffect, Terrain } from "@/content/types";
+import type { CastMember, HouseholdEffect, Provisions, Terrain } from "@/content/types";
 import { freshMember, type MemberState } from "./systems/household";
 import { emptySchedule, firstPooledAtKm, type LegSchedule } from "./systems/events";
 import { emptyQuizProgress, type QuizProgress } from "./systems/quiz";
+import { freshWater, type WaterStore } from "./systems/water";
 
 export type Pace = "steady" | "quick" | "driving";
 
@@ -42,6 +43,11 @@ export interface GameState {
   household: MemberState[];
   /** Kilometres since the last night in camp. */
   kmSinceRest: number;
+  /**
+   * What the household is carrying to drink. Only scripted content ever refills
+   * this — the player controls how fast it empties, never when more appears.
+   */
+  water: WaterStore;
   /**
    * Who the player says these people are: a name and a chosen look for every
    * member, not only the head. The roster in the content supplies the defaults.
@@ -108,7 +114,13 @@ export type Action =
       identities: Record<string, MemberIdentity>;
       head: HeadDetails;
     }
-  | { type: "DECIDE"; eventId: string; choiceId: string; effects?: HouseholdEffect }
+  | {
+      type: "DECIDE";
+      eventId: string;
+      choiceId: string;
+      effects?: HouseholdEffect;
+      provisions?: Provisions;
+    }
   | { type: "DISMISS_EVENT" }
   | { type: "DISMISS_WAYPOINT" }
   | { type: "ANSWER"; questionId: string; correct: boolean }
@@ -143,6 +155,7 @@ export function initialState(
     terrain: leg.terrain,
     household: household.map((member) => freshMember(member.id, member.role)),
     kmSinceRest: 0,
+    water: freshWater(),
     decisions: {},
     nightsCamped: 0,
     schedule: {

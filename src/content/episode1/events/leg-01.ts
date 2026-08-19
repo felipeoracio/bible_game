@@ -53,6 +53,10 @@ export const leg01Events: GameEvent[] = [
         outcome:
           "You set the trough down in the empty house. Two more skins of water go over your shoulder in its place. {naamah} watches you do it and says nothing.",
         effects: { condition: 4, morale: -4 },
+        // The skins are real: this is the one place on Leg 1 where the player can
+        // trade the text's kneading trough for a bigger water supply, and the
+        // wilderness ahead is where that bargain gets settled.
+        provisions: { water: 8, waterCapacity: 8 },
       },
     ],
     unlocks: ["kneading-troughs"],
@@ -89,6 +93,37 @@ export const leg01Events: GameEvent[] = [
       },
     ],
     unlocks: ["asking-of-the-egyptians"],
+  },
+
+  {
+    id: "the-last-canal",
+    title: "The last of the good water",
+    body: "The road out of the delta still runs beside a canal here, green and slow and full. Somebody up the column shouts back that this is the last of it — that past Succoth the country turns dry and stays dry. Everyone who can carry water is filling what they have.",
+    provenance: reasoned(
+      "The route out of Rameses runs through the watered eastern delta before the country turns to wilderness; the canal and the shouted warning are invented to put the player at the point where that changes.",
+      ref("exodus", 12, "37"),
+    ),
+    choices: [
+      {
+        id: "fill-everything",
+        label: "Fill every skin you have",
+        provenance: invented(),
+        outcome:
+          "You fill until nothing else will hold another drop, and the load settles heavier across your shoulders. It is the last time for a long while that water costs nothing but the carrying.",
+        effects: { condition: -3 },
+        provisions: { water: 999 },
+      },
+      {
+        id: "travel-light",
+        label: "Take what you can carry easily and keep moving",
+        provenance: invented(),
+        outcome:
+          "You top up what is light enough to walk with and leave the rest. The column is moving and you would rather be in it than behind it.",
+        effects: { condition: 2 },
+        provisions: { water: 6 },
+      },
+    ],
+    unlocks: ["water-in-the-wilderness"],
   },
 
   // --- Pool: ordinary life, eligible but not guaranteed ---------------------

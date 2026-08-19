@@ -297,6 +297,59 @@ describe("reduce", () => {
     expect(s.household).toEqual(start().household);
   });
 
+  it("drinks from the skins as the household walks", () => {
+    const before = start();
+    const after = reduce(before, { type: "TRAVEL", km: 10 });
+    expect(after.water.litres).toBeLessThan(before.water.litres);
+    // Still watered, so nobody is suffering for it yet.
+    for (const member of after.household) expect(member.water).toBe(100);
+  });
+
+  /**
+   * The point of §5.3: running dry is not just a number going down, it makes the
+   * march itself cost more. Same distance, same pace — only the water differs.
+   */
+  it("makes walking cost more when the skins are empty", () => {
+    const watered = reduce(start(), { type: "TRAVEL", km: 12 });
+
+    const dryStart: GameState = {
+      ...start(),
+      water: { litres: 0, capacity: 24 },
+      household: start().household.map((m) => ({ ...m, water: 10 })),
+    };
+    const parched = reduce(dryStart, { type: "TRAVEL", km: 12 });
+
+    expect(parched.household[0]!.condition).toBeLessThan(watered.household[0]!.condition);
+  });
+
+  it("never lets the player refill the skins by walking or resting", () => {
+    const walked = reduce(start(), { type: "TRAVEL", km: 10 });
+    const camped = reduce(walked, { type: "MAKE_CAMP" });
+    expect(camped.water.litres).toBeLessThanOrEqual(walked.water.litres);
+  });
+
+  it("fills the skins only from a scripted choice", () => {
+    const drained: GameState = { ...start(), water: { litres: 2, capacity: 24 } };
+    const found = reduce(drained, {
+      type: "DECIDE",
+      eventId: "the-spring",
+      choiceId: "fill-every-skin",
+      provisions: { water: 15 },
+    });
+    expect(found.water.litres).toBe(17);
+  });
+
+  it("lets a choice widen what the household can carry", () => {
+    const wider = reduce(start(), {
+      type: "DECIDE",
+      eventId: "the-dough-unrisen",
+      choiceId: "leave-the-trough",
+      provisions: { waterCapacity: 8, water: 8 },
+    });
+    expect(wider.water.capacity).toBe(32);
+    expect(wider.water.litres).toBe(32);
+  });
+
   it("records the names and faces the player chose for the whole household", () => {
     const named = reduce(start(), {
       type: "NAME_HOUSEHOLD",

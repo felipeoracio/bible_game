@@ -27,6 +27,7 @@ export const legs: Leg[] = [
       { eventId: "pharaohs-summons", atProgress: 0 },
       { eventId: "the-dough-unrisen", atProgress: 0.35 },
       { eventId: "the-asking", atProgress: 0.7 },
+      { eventId: "the-last-canal", atProgress: 0.88 },
     ],
     pool: ["hotep-asks-to-walk", "a-strap-gives-way"],
     camp: ["camp-first-night"],

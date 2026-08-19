@@ -43,6 +43,7 @@ export default function CampScreen({ onClose }: { onClose: () => void }) {
       eventId: decision.id,
       choiceId: choice.id,
       effects: choice.effects,
+      provisions: choice.provisions,
     });
   };
 
