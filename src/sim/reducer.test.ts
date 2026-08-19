@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { invented, type CastMember } from "@/content/types";
 import { isLegComplete, legProgress, reduce } from "./reducer";
 import { initialState, type GameState } from "./types";
+import { freshManna } from "./systems/manna";
 
 const CAST: CastMember[] = [
   { id: "eliab", name: "Eliab", role: "head", age: 35, description: "", provenance: invented() },
@@ -368,5 +369,125 @@ describe("reduce", () => {
     const s = start();
     expect(s.identities.eliab).toEqual({ name: "Eliab", look: 0 });
     expect(s.identities.milcah).toEqual({ name: "Milcah", look: 0 });
+  });
+});
+
+describe("manna through the reducer", () => {
+  /**
+   * Manna does not exist until Leg 8, and until then it must not perturb a single
+   * thing. This is the test that lets the system ship dormant.
+   */
+  describe("before it begins", () => {
+    it("ignores every manna action", () => {
+      const s = start();
+      expect(reduce(s, { type: "GATHER_MANNA", inTime: true })).toBe(s);
+      expect(reduce(s, { type: "LAY_ASIDE_MANNA", omers: 3 })).toBe(s);
+    });
+
+    it("leaves camp working exactly as it did", () => {
+      const walked = reduce(start(), { type: "TRAVEL", km: 10 });
+      const camped = reduce(walked, { type: "MAKE_CAMP" });
+      expect(camped.day).toBe(walked.day + 1);
+      expect(camped.kmSinceRest).toBe(0);
+      expect(camped.mannaDay).toBe(0);
+      expect(camped.manna).toEqual(freshManna());
+      // Nobody starves in Egypt for want of a system that has not started.
+      for (const member of camped.household) expect(member.condition).toBeGreaterThan(90);
+    });
+  });
+
+  describe("once it begins", () => {
+    const begun = () => reduce(start(), { type: "MANNA_BEGINS" });
+
+    it("starts the week on its own clock, not the journey's", () => {
+      const walked = reduce(start(), { type: "TRAVEL", km: 10 });
+      const camped = reduce(walked, { type: "MAKE_CAMP" });
+      const s = reduce(camped, { type: "MANNA_BEGINS" });
+      expect(s.day).toBe(2);
+      expect(s.mannaDay).toBe(1);
+    });
+
+    it("does not restart once it is running", () => {
+      const once = begun();
+      expect(reduce(once, { type: "MANNA_BEGINS" })).toBe(once);
+    });
+
+    it("fills the basket for the morning", () => {
+      const gathered = reduce(begun(), { type: "GATHER_MANNA", inTime: true });
+      expect(gathered.manna.fresh).toBe(CAST.length);
+    });
+
+    it("comes back empty-handed once the sun has grown hot", () => {
+      const late = reduce(begun(), { type: "GATHER_MANNA", inTime: false });
+      expect(late.manna.fresh).toBe(0);
+    });
+
+    it("feeds the household overnight and empties the basket by morning", () => {
+      const gathered = reduce(begun(), { type: "GATHER_MANNA", inTime: true });
+      const camped = reduce(gathered, { type: "MAKE_CAMP" });
+      expect(camped.mannaDay).toBe(2);
+      expect(camped.manna.fresh).toBe(0);
+      expect(camped.mannaSpoiled).toBeUndefined();
+    });
+
+    it("finds worms in what was hoarded on an ordinary day", () => {
+      const gathered = reduce(begun(), { type: "GATHER_MANNA", inTime: true });
+      const hoarded = reduce(gathered, { type: "LAY_ASIDE_MANNA", omers: 99 });
+      const camped = reduce(hoarded, { type: "MAKE_CAMP" });
+      expect(camped.mannaSpoiled).toBe(CAST.length);
+      expect(camped.manna.laidAside).toBe(0);
+      // And they went without supper for it, which is the other half of v20.
+      for (const member of camped.household) expect(member.condition).toBeLessThan(100);
+    });
+
+    it("goes hungry on a night it gathered nothing", () => {
+      const camped = reduce(begun(), { type: "MAKE_CAMP" });
+      for (const member of camped.household) expect(member.condition).toBeLessThan(100);
+    });
+
+    /** The sixth day and the Sabbath, played through the reducer as a player would. */
+    it("carries a prepared household through the Sabbath", () => {
+      let s = begun();
+      // Days one to five.
+      for (let i = 0; i < 5; i++) {
+        s = reduce(s, { type: "GATHER_MANNA", inTime: true });
+        s = reduce(s, { type: "MAKE_CAMP" });
+      }
+      expect(s.mannaDay).toBe(6);
+
+      // The sixth day: twice as much falls, and the second omer is laid aside.
+      s = reduce(s, { type: "GATHER_MANNA", inTime: true });
+      expect(s.manna.fresh).toBe(CAST.length * 2);
+      s = reduce(s, { type: "LAY_ASIDE_MANNA", omers: CAST.length });
+      s = reduce(s, { type: "MAKE_CAMP" });
+
+      // Sabbath morning: nothing rotted, and there is food without going out.
+      expect(s.mannaDay).toBe(7);
+      expect(s.mannaSpoiled).toBeUndefined();
+      expect(s.manna.fresh).toBe(CAST.length);
+
+      // Going out anyway finds none, and costs them nothing they already have.
+      const wentOut = reduce(s, { type: "GATHER_MANNA", inTime: true });
+      expect(wentOut.manna.fresh).toBe(CAST.length);
+
+      const sabbathNight = reduce(s, { type: "MAKE_CAMP" });
+      for (const member of sabbathNight.household) expect(member.condition).toBe(100);
+    });
+
+    it("leaves an unprepared household hungry on the Sabbath", () => {
+      let s = begun();
+      for (let i = 0; i < 6; i++) {
+        s = reduce(s, { type: "GATHER_MANNA", inTime: true });
+        s = reduce(s, { type: "MAKE_CAMP" });
+      }
+      expect(s.mannaDay).toBe(7);
+      // The uneaten half of the sixth day's double portion bred worms.
+      expect(s.mannaSpoiled).toBe(CAST.length);
+
+      const before = s.household[0]!.condition;
+      s = reduce(s, { type: "GATHER_MANNA", inTime: true });
+      s = reduce(s, { type: "MAKE_CAMP" });
+      expect(s.household[0]!.condition).toBeLessThan(before);
+    });
   });
 });

@@ -14,6 +14,7 @@ import { freshMember, type MemberState } from "./systems/household";
 import { emptySchedule, firstPooledAtKm, type LegSchedule } from "./systems/events";
 import { emptyQuizProgress, type QuizProgress } from "./systems/quiz";
 import { freshWater, type WaterStore } from "./systems/water";
+import { freshManna, type MannaStore } from "./systems/manna";
 
 export type Pace = "steady" | "quick" | "driving";
 
@@ -89,6 +90,18 @@ export interface GameState {
   quiz: QuizProgress;
   /** Checkpoint waiting to be taken, set on arrival and cleared when it is done. */
   quizPending?: string;
+
+  // --- Manna ----------------------------------------------------------------
+  /**
+   * Days since manna first fell, 1-indexed. Zero until it begins — the seven-day
+   * pattern is counted from the first morning, not from leaving Egypt, so this is
+   * its own clock rather than a reading of `day`.
+   */
+  mannaDay: number;
+  /** What is in the basket. Empty and inert until `mannaDay` is set. */
+  manna: MannaStore;
+  /** Set at dawn when a hoarded basket bred worms, so camp can say so once. */
+  mannaSpoiled?: number;
 }
 
 /** A name and an appearance, chosen for one member of the household. */
@@ -124,7 +137,16 @@ export type Action =
   | { type: "DISMISS_EVENT" }
   | { type: "DISMISS_WAYPOINT" }
   | { type: "ANSWER"; questionId: string; correct: boolean }
-  | { type: "FINISH_QUIZ" };
+  | { type: "FINISH_QUIZ" }
+  /**
+   * Manna begins. Fired from scripted content at Leg 8 and never by the player,
+   * for the same reason water refills are: the supply is not theirs to start.
+   */
+  | { type: "MANNA_BEGINS" }
+  /** Go out for the morning portion. `inTime` is false once the sun has grown hot. */
+  | { type: "GATHER_MANNA"; inTime: boolean }
+  /** Keep some back. Obedient on the sixth day, and the v20 mistake on any other. */
+  | { type: "LAY_ASIDE_MANNA"; omers: number };
 
 /**
  * Takes only the shape it needs from a content `Leg`, so the simulation stays
@@ -156,6 +178,8 @@ export function initialState(
     household: household.map((member) => freshMember(member.id, member.role)),
     kmSinceRest: 0,
     water: freshWater(),
+    mannaDay: 0,
+    manna: freshManna(),
     decisions: {},
     nightsCamped: 0,
     schedule: {

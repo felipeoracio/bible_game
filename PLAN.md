@@ -237,9 +237,44 @@ the legs are authored.
 Drain rates are still tuned by feel, not research — flagged with the other unresearched
 numbers below.
 
-**F10 · Manna** — the signature mechanic from Exodus 16. Morning gathering minigame, one
-omer per person, hoarded manna spoils overnight, double portion holds on the sixth day only,
-nothing on the seventh. The player learns the text by failing at it. Unlocks at Leg 8.
+**F10 · Manna** — ✅ built and verified, and **dormant until Leg 8**
+One omer per person, hoarded manna spoils overnight, the double portion holds on the sixth
+day only, nothing falls on the seventh. The player learns the text by failing at it.
+*Done when:* every rule in Exodus 16 is enforced by a test that names its verse, and
+nothing in the system perturbs a single thing before it begins.
+
+**The doc asks for a gathering minigame and the text will not support one.** Exodus 16:18
+says the one who gathered much had nothing over and the one who gathered little had no
+lack. A collect-as-much-as-you-can score would contradict the exact verse it exists to
+teach, so gathering is not scored and effort changes nothing. What the text *does* record
+is three ways to get it wrong, and those are the game:
+
+| The mistake | Verse | What the game does |
+|---|---|---|
+| Keeping it overnight | 16:19-20 | It breeds worms, and you went without supper to hoard it |
+| Missing the morning | 16:21 | The sun grew hot and it melted; nothing to gather |
+| Going out on the seventh | 16:26-27 | The button stays enabled and you find none |
+
+That last one matters: **the gather button is never hidden or disabled on the Sabbath**.
+Being allowed to make the mistake is the lesson, and a greyed-out button teaches nothing.
+
+Laying food aside costs tonight's meal — `eat` draws from `fresh` only and cannot touch
+what was set aside. Without that, hoarding is a free hedge and the sixth-day command
+becomes bookkeeping rather than an act of trust. This was got wrong first time round: the
+original `eat` drew from the laid-aside portion first, which quietly ate the Sabbath
+portion on the sixth night. The tests caught it.
+
+`gatheredToday` is tracked separately from what is in the basket. Reading `fresh` to decide
+whether the household had already been out let a player gather, lay the lot aside, gather
+again, and farm unlimited manna — found by playing it, not by reading it.
+
+The panel lives at camp and renders nothing while `mannaDay` is 0, which it is for the
+whole playable slice. Verified by temporarily starting manna at day 1, playing the gather
+and hoard paths in the browser, and reverting. **No Codex entry yet and Exodus 16 is not
+bundled** — an entry has to be unlockable, and the event that would unlock it is Leg 8's,
+which F14 authors. That is the honest stopping point for this feature.
+
+Hunger numbers are tuned by feel, like the water and frailty numbers.
 
 **F11 · Failure states** — household fracture, falling behind the column, weaker endings.
 No random death. Death only at specific recorded events.

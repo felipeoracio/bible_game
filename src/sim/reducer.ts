@@ -3,6 +3,7 @@ import { applyEffectAll } from "./systems/camp";
 import { nextEvent } from "./systems/events";
 import { recordAnswer } from "./systems/quiz";
 import { drink, refill, thirstPenalty, widenCapacity } from "./systems/water";
+import { dawn, eat, freshManna, gather, layAside } from "./systems/manna";
 import type { Action, GameState } from "./types";
 
 /**
@@ -87,14 +88,60 @@ export function reduce(state: GameState, action: Action): GameState {
       return moved;
     }
 
-    case "MAKE_CAMP":
+    case "MAKE_CAMP": {
+      const rested = restAll(state.household);
+
+      // Manna is not running yet: camp is exactly what it was before F10.
+      if (state.mannaDay <= 0) {
+        return {
+          ...state,
+          day: state.day + 1,
+          nightsCamped: state.nightsCamped + 1,
+          kmSinceRest: 0,
+          household: rested,
+        };
+      }
+
+      /*
+       * The evening meal, then the night, then the morning.
+       *
+       * Eating happens before dawn resolves so the household is fed from what it
+       * gathered today — and so that whatever is deliberately kept back is what
+       * the worms find. That ordering is the mechanic: hoarding only costs you
+       * because you had the chance to eat it first.
+       */
+      const meal = eat(state.manna, rested);
+      const morning = dawn(meal.manna);
+
       return {
         ...state,
         day: state.day + 1,
+        mannaDay: state.mannaDay + 1,
         nightsCamped: state.nightsCamped + 1,
         kmSinceRest: 0,
-        household: restAll(state.household),
+        household: meal.household,
+        manna: morning.manna,
+        mannaSpoiled: morning.spoiled > 0 ? morning.spoiled : undefined,
       };
+    }
+
+    /** Leg 8. Scripted, like every other supply the household does not control. */
+    case "MANNA_BEGINS":
+      return state.mannaDay > 0 ? state : { ...state, mannaDay: 1, manna: freshManna() };
+
+    case "GATHER_MANNA": {
+      if (state.mannaDay <= 0) return state;
+      const result = gather(state.manna, state.household, state.mannaDay, action.inTime);
+      // Going out and finding none is a real outcome the player is allowed to have,
+      // so this returns changed state only when the basket actually changed.
+      return result.manna === state.manna ? state : { ...state, manna: result.manna };
+    }
+
+    case "LAY_ASIDE_MANNA": {
+      if (state.mannaDay <= 0) return state;
+      const manna = layAside(state.manna, state.mannaDay, action.omers);
+      return manna === state.manna ? state : { ...state, manna };
+    }
 
     case "DECIDE": {
       // Recording the choice is the point; the effect is optional, because plenty

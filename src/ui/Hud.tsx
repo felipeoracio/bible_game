@@ -119,7 +119,7 @@ export default function Hud({ onMakeCamp }: { onMakeCamp: () => void }) {
           onClick={onMakeCamp}
           disabled={kmSinceRest <= 0}
           title={kmSinceRest <= 0 ? "Walk a while before you stop for the night." : undefined}
-          className="text-pixel-sm ml-auto border-2 border-ochre/60 px-3 py-1.5 uppercase tracking-widest text-linen transition-colors hover:border-terracotta hover:bg-terracotta disabled:cursor-not-allowed disabled:border-linen/15 disabled:text-linen/25"
+          className="text-pixel-sm ml-auto border-2 border-ochre/60 px-3 py-1.5 uppercase tracking-widest text-linen transition-colors hover:border-terracotta hover:bg-terracotta disabled:cursor-not-allowed disabled:border-linen/15 disabled:text-linen/25 disabled:hover:border-linen/15 disabled:hover:bg-transparent"
         >
           Make camp
         </button>

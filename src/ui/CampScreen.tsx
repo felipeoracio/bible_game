@@ -7,6 +7,7 @@ import { figureFor, lookAsset } from "@/game/party";
 import { moodOf } from "@/sim/systems/camp";
 import { useGame } from "@/state/store";
 import EventCard from "./EventCard";
+import MannaPanel from "./MannaPanel";
 import { withNames } from "@/content/names";
 
 /**
@@ -103,6 +104,9 @@ export default function CampScreen({ onClose }: { onClose: () => void }) {
             );
           })}
         </section>
+
+        {/* The basket. Renders nothing until manna begins at Leg 8. */}
+        <MannaPanel />
 
         {/* The decision that carries forward. Same card the road uses. */}
         {decision && (
