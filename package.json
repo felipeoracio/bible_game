@@ -9,6 +9,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "validate:content": "vite-node scripts/validate-content.ts",
+    "review:packet": "vite-node scripts/review-packet.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },

@@ -24,9 +24,9 @@ export const legs0204Codex: CodexEntry[] = [
     id: "josephs-bones-note",
     title: "Joseph's bones",
     kind: "object",
-    note: "Moses takes Joseph's bones out of Egypt with him, because Joseph made the sons of Israel swear to it: God will surely visit you, and you shall carry my bones up from here. Joseph died at the end of Genesis. Between that promise and this morning are the four hundred years of Exodus 12:40. Somebody kept it. Nobody is named for keeping it. It is one line in the middle of an evacuation, and it is the longest-running promise in the book.",
-    provenance: recorded(ref("exodus", 13, "19")),
-    passages: [ref("exodus", 13, "19")],
+    note: "Moses takes Joseph's bones out of Egypt with him, because Joseph made the sons of Israel swear to it: God will surely visit you, and you shall carry my bones up from here. Joseph died at the end of Genesis. Between that promise and this morning are the four hundred and thirty years of Exodus 12:40. Somebody kept it. Nobody is named for keeping it. It is one line in the middle of an evacuation, and it is the longest-running promise in the book.",
+    provenance: recorded(ref("exodus", 13, "19"), ref("exodus", 12, "40")),
+    passages: [ref("exodus", 13, "19"), ref("exodus", 12, "40-41")],
     related: ["etham"],
   },
   {

@@ -214,7 +214,17 @@ const rephidim: SetPiece = {
   id: "rephidim",
   title: "Amalek",
   mechanic: "amalek-at-the-rear",
-  provenance: recorded(ref("exodus", 17, "8")),
+  /*
+   * Cites all three things the intro actually asserts: that Amalek came (17:8),
+   * that Joshua chose men and Moses went up the hill with Aaron and Hur (17:9-10),
+   * and that the attack fell on the rear (Deuteronomy 25:18). Flagged in the
+   * Scripture review pass — it previously cited 17:8 alone and claimed the rest.
+   */
+  provenance: recorded(
+    ref("exodus", 17, "8"),
+    ref("exodus", 17, "9-10"),
+    ref("deuteronomy", 25, "18"),
+  ),
   intro:
     "They come at the back of the column, where the walking is slowest. Joshua is choosing men out of the camp. Moses has gone up the hill with Aaron and Hur, and he has the rod in his hand.",
   phases: [

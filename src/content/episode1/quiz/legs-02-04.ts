@@ -54,7 +54,8 @@ export const leg02Quiz: Quiz = {
         { id: "cloud-only", label: "A pillar of cloud, only in daylight", correct: false },
         { id: "fire-only", label: "A pillar of fire, only after dark", correct: false },
       ],
-      teaches: ref("exodus", 13, "21"),
+      // The explanation's second sentence is 13:22, so the question teaches both.
+      teaches: ref("exodus", 13, "21-22"),
       explanation:
         "Both, so that they could travel by day and by night. The account adds that neither one departed from before the people — it stayed with them for the whole wilderness, not just this leg.",
     },

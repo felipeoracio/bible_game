@@ -634,7 +634,9 @@ Two rules, both enforced by the content validator:
 
 ## Still open
 
-- Scripture reviewer — longest lead time on the project, needed before Feature 14. Start now.
+- **Scripture reviewer — packet built and a self-audit done; a qualified human has still
+  not reviewed this.** See below. That last sentence is the open item, and no amount of
+  tooling closes it.
 - Exodus date (early vs late) — blocks Egyptian art direction at Feature 15, not before.
 - Working title clearance.
 - Tribe selection — deliberately out of Episode 1 unless the slice feels thin.
@@ -642,3 +644,69 @@ Two rules, both enforced by the content validator:
 ---
 
 Next: **Feature 1 — scaffold and game shell.**
+
+---
+
+## Scripture review pass — instrument built, self-audit done, human review still owed
+
+**The honest position first: a qualified reviewer has not looked at this, and nothing
+here is a substitute for that.** What this pass did was make the review cheap enough to
+actually happen, and clear the defects an attentive non-specialist can find.
+
+### The packet
+
+`npm run review:packet` writes `docs/scripture-review.md` — every claim the game makes
+about Scripture, in reading order, with the cited verses printed underneath it. Until now
+"review the provenance tags" meant reading TypeScript across a dozen files; now it means
+reading one document and answering one question per section:
+
+- **106 recorded claims** — the game tells the player the text says this.
+  *Does the citation support the claim, or should it be downgraded?*
+- **45 reasoned claims** — the game tells the player this is inference, and shows the
+  basis. *Is the inference sound, and is the stated basis honest?*
+- 157 invented items make no claim about Scripture and are listed only as a count.
+
+The packet regenerates from the shipped content, so it can never drift from what players
+actually read.
+
+### What the self-audit found and fixed
+
+| | Finding | Fix |
+|---|---|---|
+| **Factual error** | "the four hundred years of Exodus 12:40" — the verse says four hundred and **thirty**. Four hundred is Genesis 15:13, a different verse. | Corrected, and 12:40 now cited |
+| **Under-citation** | The Amalek intro named Joshua, the hill, Aaron and Hur, and the attack falling on the rear, while citing Exodus 17:8 alone | Now cites 17:8, 17:9-10 and Deuteronomy 25:18 |
+| **Under-citation** | The pillar quiz explanation asserts 13:22 ("did not depart") while teaching 13:21 | Now teaches 13:21-22 |
+| **Disclosure gap** | Five entries said individual *sites* were uncertain; nothing said the **route as a whole** is a contested reading the game had to pick from | New Codex entry, "Which road is this?", unlocked on Leg 1 |
+
+All four are pinned by tests, because every one of them passed the validator — the
+citations resolved, the tiers were legal, the ids existed. They were only visible to
+someone reading the claim next to the verse.
+
+A mechanical sweep for numbers asserted in recorded prose but absent from the cited text
+flagged eleven claims; ten were false positives (chapter references like "Numbers 33"
+reading as a numeral). It found nothing the careful read had missed, which is the useful
+result — it means the read was thorough rather than lucky.
+
+### The four questions only a reviewer can answer
+
+Carried in the packet itself so they regenerate rather than getting lost. They are policy,
+not defects, and the answers should come back as rules the content is then held to.
+
+1. **The tier is on the block, not the sentence.** A recorded event body is one tagged
+   unit, but its prose mixes recorded fact with invented atmosphere. Is a block tag honest
+   enough, or must the interface distinguish within a paragraph? *Every* recorded entry
+   has some of this, so the answer is either "fine" or "a large rewrite".
+2. **The divine name.** The bundled translation reads *Yahweh*; much of the game's prose
+   paraphrases to *God*, including inside recorded outcome text sitting next to the verse.
+3. **Paraphrase in outcome text.** Set-piece outcomes retell their verses rather than
+   quoting them. Right register, or should they quote?
+4. **Whether to name the route.** The game now says the route is one reading among several
+   but does not say which, because the distances were reasoned from a day's march rather
+   than laid against any named reconstruction. Commit and be judged, or is "we drew one
+   line and do not claim it" more honest for a teaching game?
+
+### What a reviewer should be asked to do
+
+Read `docs/scripture-review.md` end to end, mark every recorded claim keep / downgrade /
+recite, every reasoned basis sound / unsound, and answer the four questions. That is a
+day's work on the packet versus a week on the source, which was the point of building it.

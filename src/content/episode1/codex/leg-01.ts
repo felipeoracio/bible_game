@@ -63,6 +63,18 @@ export const leg01Codex: CodexEntry[] = [
     related: ["how-far-was-it", "succoth"],
   },
   {
+    id: "which-road-is-this",
+    title: "Which road is this?",
+    kind: "note",
+    note: "Worth saying at the start, because it affects every map in this game. Numbers 33 gives the camps and their order, and that is recorded. Where those camps actually were is not — almost none of them can be located with confidence, and readers who take the text equally seriously have placed the route in quite different parts of the map, including disagreeing about which body of water was crossed and which mountain is Sinai. This game had to draw one line in order to have anything to walk along, so it follows one of those readings. It is not put forward as the right one. If your Bible's map disagrees with ours, your Bible's map may well be closer, and nothing in the journey you are playing depends on ours being correct: the names, the order, and everything that happens at them come from the text, and only the geography between them is a choice we made.",
+    provenance: reasoned(
+      "Numbers 33 records the camps and their sequence but locates none of them; the identification of the crossing point, the mountain and most of the intervening camps is disputed, so the route this game draws is one reconstruction among several and is labelled as the game's own.",
+      ref("numbers", 33, "1-2"),
+    ),
+    passages: [ref("numbers", 33, "1-2")],
+    related: ["how-far-was-it", "succoth"],
+  },
+  {
     id: "how-far-was-it",
     title: "How far was it?",
     kind: "note",

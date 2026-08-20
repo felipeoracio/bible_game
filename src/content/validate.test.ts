@@ -362,3 +362,65 @@ describe("relief cannot be earned by choosing well", () => {
     expect(marah.phases.every((phase) => phase.futile)).toBe(true);
   });
 });
+
+/**
+ * Findings from the Scripture review pass, pinned so they cannot come back.
+ *
+ * These are the defects that pass every automated check — the citation resolves,
+ * the tier is legal, the ids exist — and are only visible to someone reading the
+ * claim next to the verse. That is exactly what the review packet
+ * (`npm run review:packet`) exists to make possible.
+ */
+describe("what the Scripture review found", () => {
+  /**
+   * The one outright factual error in the episode: the entry said "the four
+   * hundred years of Exodus 12:40". The verse says four hundred and thirty. Four
+   * hundred is Genesis 15:13, a different verse.
+   */
+  it("does not misquote the number of years in Exodus 12:40", () => {
+    const note = episode1.codex["josephs-bones-note"]!.note;
+    expect(note).toContain("four hundred and thirty");
+    expect(note).not.toMatch(/\bfour hundred years\b/);
+
+    const verse = getPassage(ref("exodus", 12, "40"))!.verses[0]!.text;
+    expect(verse).toContain("four hundred thirty");
+  });
+
+  /**
+   * Under-citation: a recorded block asserting more than its references cover.
+   * The Amalek intro named Joshua, the hill, Aaron and Hur, and the attack falling
+   * on the rear, while citing Exodus 17:8 alone.
+   */
+  it("cites everything the Amalek intro actually asserts", () => {
+    const piece = episode1.setPieces["rephidim"]!;
+    expect(piece.provenance.tier).toBe("recorded");
+    if (piece.provenance.tier !== "recorded") return;
+
+    const cited = piece.provenance.refs.map((r) => `${r.book} ${r.chapter}:${r.verses}`);
+    // Joshua choosing men, and Moses going up the hill with Aaron and Hur.
+    expect(cited).toContain("exodus 17:9-10");
+    // "They come at the back of the column" is Deuteronomy, not Exodus 17.
+    expect(cited).toContain("deuteronomy 25:18");
+  });
+
+  it("teaches both verses the pillar explanation relies on", () => {
+    const q = episode1.quizzes["quiz-leg-02"]!.questions.find((x) => x.id === "q-pillar")!;
+    // The second sentence — that it never departed — is 13:22.
+    expect(q.teaches.verses).toBe("21-22");
+  });
+
+  /**
+   * The game picks one reconstruction of a disputed route in order to have any
+   * map at all, and has to say so. Individual sites were already flagged as
+   * uncertain; the route as a whole was not.
+   */
+  it("tells the player the route itself is one reading among several", () => {
+    const entry = episode1.codex["which-road-is-this"];
+    expect(entry).toBeDefined();
+    expect(entry!.provenance.tier).toBe("reasoned");
+    expect(entry!.note).toMatch(/not put forward as the right one/i);
+
+    const unlocked = episode1.legs.flatMap((leg) => leg.unlocks ?? []);
+    expect(unlocked).toContain("which-road-is-this");
+  });
+});
