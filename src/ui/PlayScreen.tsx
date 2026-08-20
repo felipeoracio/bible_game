@@ -7,6 +7,7 @@ import CampScreen from "./CampScreen";
 import EventOverlay from "./EventOverlay";
 import QuizScreen from "./QuizScreen";
 import WaypointScreen from "./WaypointScreen";
+import SetPieceScreen from "./SetPieceScreen";
 import GameCanvas from "./GameCanvas";
 import Hud from "./Hud";
 import PartyPanel from "./PartyPanel";
@@ -55,12 +56,17 @@ export default function PlayScreen() {
       <Hud onMakeCamp={() => setCamping(true)} />
       <PartyPanel />
 
-      {/* Road events sit above the march; arrival above those; camp is player-opened. */}
+      {/*
+        Road events sit above the march; arrival above those; camp is player-opened.
+        A set piece outranks all of them — the march has stopped and there is no way
+        round it, so it is mounted last and covers everything.
+      */}
       <EventOverlay />
       <WaypointScreen />
       {/* The checkpoint follows the arrival entry, once it has been read. */}
       <QuizScreen />
       {camping && <CampScreen onClose={() => setCamping(false)} />}
+      <SetPieceScreen />
     </main>
   );
 }

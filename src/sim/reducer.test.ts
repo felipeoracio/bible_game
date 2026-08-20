@@ -3,6 +3,7 @@ import { invented, type CastMember } from "@/content/types";
 import { isLegComplete, legProgress, reduce } from "./reducer";
 import { initialState, type GameState } from "./types";
 import { freshManna } from "./systems/manna";
+import type { RunnableSetPiece } from "./systems/setpiece";
 
 const CAST: CastMember[] = [
   { id: "eliab", name: "Eliab", role: "head", age: 35, description: "", provenance: invented() },
@@ -573,5 +574,155 @@ describe("the household coming apart, through the reducer", () => {
       effects: { trust: 5 },
     });
     for (const member of after.household) expect(member.following).toBe(true);
+  });
+});
+
+describe("set pieces, through the reducer", () => {
+  const marah: RunnableSetPiece = {
+    id: "marah",
+    phases: [
+      {
+        id: "the-pool",
+        futile: true,
+        choices: [
+          { id: "try-it", effects: { condition: -7 } },
+          { id: "keep-them-back", effects: { trust: 5 } },
+        ],
+      },
+    ],
+    outcome: { provisions: { water: 999 }, effects: { morale: 12 } },
+    unlocks: ["marah-note"],
+  };
+
+  const dry = (): GameState => ({ ...start(), water: { litres: 0, capacity: 24 } });
+
+  const playThrough = (from: GameState, piece: RunnableSetPiece, choiceId: string) => {
+    let s = reduce(from, { type: "BEGIN_SET_PIECE", piece });
+    s = reduce(s, { type: "SET_PIECE_CHOOSE", piece, choiceId });
+    s = reduce(s, { type: "SET_PIECE_ADVANCE", piece });
+    return reduce(s, { type: "FINISH_SET_PIECE", piece });
+  };
+
+  it("begins once and does not restart on top of itself", () => {
+    const begun = reduce(start(), { type: "BEGIN_SET_PIECE", piece: marah });
+    expect(begun.setPiece?.id).toBe("marah");
+    expect(reduce(begun, { type: "BEGIN_SET_PIECE", piece: marah })).toBe(begun);
+  });
+
+  /** The sea is in the way. You do not walk past a set piece. */
+  it("stops the march dead while one is running", () => {
+    const begun = reduce(start(), { type: "BEGIN_SET_PIECE", piece: marah });
+    expect(reduce(begun, { type: "TRAVEL", km: 5 })).toBe(begun);
+  });
+
+  it("lets the march resume once it is finished", () => {
+    const done = playThrough(start(), marah, "try-it");
+    expect(reduce(done, { type: "TRAVEL", km: 5 }).distanceKm).toBeGreaterThan(0);
+  });
+
+  it("applies what the player chose to the household", () => {
+    const begun = reduce(start(), { type: "BEGIN_SET_PIECE", piece: marah });
+    const chosen = reduce(begun, { type: "SET_PIECE_CHOOSE", piece: marah, choiceId: "try-it" });
+    expect(chosen.household[0]!.condition).toBeLessThan(100);
+  });
+
+  it("will not let the same phase be answered twice", () => {
+    const begun = reduce(start(), { type: "BEGIN_SET_PIECE", piece: marah });
+    const once = reduce(begun, { type: "SET_PIECE_CHOOSE", piece: marah, choiceId: "try-it" });
+    const twice = reduce(once, { type: "SET_PIECE_CHOOSE", piece: marah, choiceId: "try-it" });
+    expect(twice).toBe(once);
+  });
+
+  it("refuses to finish before every phase has been played", () => {
+    const begun = reduce(start(), { type: "BEGIN_SET_PIECE", piece: marah });
+    expect(reduce(begun, { type: "FINISH_SET_PIECE", piece: marah })).toBe(begun);
+  });
+
+  /** The payoff F9's whole water system was built for. */
+  it("fills the skins from the recorded outcome, not from the choice", () => {
+    const done = playThrough(dry(), marah, "try-it");
+    expect(done.water.litres).toBe(done.water.capacity);
+  });
+
+  it("opens the Codex entry the outcome carries", () => {
+    expect(playThrough(start(), marah, "try-it").unlockedCodex).toContain("marah-note");
+  });
+
+  /**
+   * The bet the game rests on, checked at the level that actually ships: every
+   * route through Marah ends with the same water and the same entry opened.
+   */
+  it("ends the same way whatever the player chose", () => {
+    const a = playThrough(dry(), marah, "try-it");
+    const b = playThrough(dry(), marah, "keep-them-back");
+
+    expect(a.water.litres).toBe(b.water.litres);
+    expect(a.unlockedCodex).toEqual(b.unlockedCodex);
+    // The households differ, because that is the part the player does own.
+    expect(a.household[0]!.condition).not.toBe(b.household[0]!.condition);
+  });
+
+  it("does not apply the outcome twice if finish is dispatched again", () => {
+    const done = playThrough(start(), marah, "try-it");
+    expect(reduce(done, { type: "FINISH_SET_PIECE", piece: marah })).toBe(done);
+  });
+
+  describe("Amalek at the rear", () => {
+    const rephidim: RunnableSetPiece = {
+      id: "rephidim",
+      mechanic: "amalek-at-the-rear",
+      phases: [{ id: "the-hill", futile: true, choices: [{ id: "watch" }] }],
+      outcome: {},
+    };
+
+    /** Deuteronomy 25:18 — it costs you according to where you were standing. */
+    it("costs a straggling household far more than one that kept up", () => {
+      const kept = playThrough({ ...start(), lagKm: 0 }, rephidim, "watch");
+      const behind = playThrough({ ...start(), lagKm: 20 }, rephidim, "watch");
+      expect(behind.household[0]!.condition).toBeLessThan(kept.household[0]!.condition);
+    });
+
+    /** Exodus 17:13 — Joshua wins either way, and every household saw it. */
+    it("raises trust even for the household that was caught", () => {
+      const behind = playThrough({ ...start(), lagKm: 20 }, rephidim, "watch");
+      expect(behind.household[0]!.trust).toBeGreaterThan(start().household[0]!.trust);
+    });
+  });
+
+  describe("being placed under a judge", () => {
+    const jethro: RunnableSetPiece = {
+      id: "jethro",
+      mechanic: "appointed-to-a-judge",
+      phases: [{ id: "the-queue", choices: [{ id: "wait" }] }],
+      outcome: {},
+    };
+
+    const withJudges = (from: GameState) => {
+      let s = reduce(from, { type: "BEGIN_SET_PIECE", piece: jethro });
+      s = reduce(s, { type: "SET_PIECE_CHOOSE", piece: jethro, choiceId: "wait" });
+      s = reduce(s, { type: "SET_PIECE_ADVANCE", piece: jethro });
+      return reduce(s, {
+        type: "FINISH_SET_PIECE",
+        piece: jethro,
+        judgeIds: ["shelumiel", "ahira"],
+      });
+    };
+
+    it("places the household under one of the judges the content has", () => {
+      expect(["shelumiel", "ahira"]).toContain(withJudges(start()).judgeId);
+    });
+
+    it("keeps the judge for the rest of the run", () => {
+      const placed = withJudges(start());
+      const later = reduce(placed, { type: "TRAVEL", km: 5 });
+      expect(later.judgeId).toBe(placed.judgeId);
+    });
+
+    it("does nothing when the content has no judges", () => {
+      let s = reduce(start(), { type: "BEGIN_SET_PIECE", piece: jethro });
+      s = reduce(s, { type: "SET_PIECE_CHOOSE", piece: jethro, choiceId: "wait" });
+      s = reduce(s, { type: "SET_PIECE_ADVANCE", piece: jethro });
+      expect(reduce(s, { type: "FINISH_SET_PIECE", piece: jethro }).judgeId).toBeUndefined();
+    });
   });
 });

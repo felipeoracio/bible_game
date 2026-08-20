@@ -241,3 +241,97 @@ describe("verse specs", () => {
     expect(getPassage(ref("exodus", 12, "42-43"))).toBeNull();
   });
 });
+
+/**
+ * The set pieces are where a Bible game is most tempted to let the player change
+ * what happened, so the validator is stricter here than anywhere else.
+ */
+describe("the validator guards the set pieces", () => {
+  it("catches a set piece that does not cite anything", () => {
+    const issues = broken((episode) => {
+      episode.setPieces["marah"]!.provenance = reasoned(
+        "A basis long enough to pass the length check but still not a citation.",
+      );
+    });
+    expect(errors(issues).some((i) => /must cite chapter and verse/i.test(i.message))).toBe(true);
+  });
+
+  /** Presenting an invented outcome as what Scripture records is the worst failure here. */
+  it("catches an outcome that is not recorded", () => {
+    const issues = broken((episode) => {
+      episode.setPieces["marah"]!.outcome.provenance = reasoned(
+        "Plausible enough, but this is the part of a set piece that is not ours to reason about.",
+      );
+    });
+    expect(
+      errors(issues).some((i) => /What happens at a set piece is recorded/i.test(i.message)),
+    ).toBe(true);
+  });
+
+  /** The household is invented, so its decisions cannot be tagged as Scripture. */
+  it("catches a choice claiming to be recorded", () => {
+    const issues = broken((episode) => {
+      episode.setPieces["marah"]!.phases[0]!.choices[0]!.provenance = recorded(
+        ref("exodus", 15, "22"),
+      );
+    });
+    expect(
+      errors(issues).some((i) => /what your invented household did/i.test(i.message)),
+    ).toBe(true);
+  });
+
+  it("catches a set piece unlocking a Codex entry that does not exist", () => {
+    const issues = broken((episode) => {
+      episode.setPieces["marah"]!.unlocks = ["no-such-entry"];
+    });
+    expect(errors(issues).some((i) => /unlocks unknown Codex entry/i.test(i.message))).toBe(true);
+  });
+
+  it("catches two phases sharing an id", () => {
+    const issues = broken((episode) => {
+      const piece = episode.setPieces["marah"]!;
+      piece.phases[1]!.id = piece.phases[0]!.id;
+    });
+    expect(errors(issues).some((i) => /duplicate id/i.test(i.message))).toBe(true);
+  });
+
+  it("catches an empty set piece", () => {
+    const issues = broken((episode) => {
+      episode.setPieces["marah"]!.phases = [];
+    });
+    expect(errors(issues).some((i) => /has no phases/i.test(i.message))).toBe(true);
+  });
+
+  /** Exodus 18 records the ranks and names none of the men who held them. */
+  it("catches a judge presented as a real named person", () => {
+    const issues = broken((episode) => {
+      episode.judges[0]!.provenance = recorded(ref("exodus", 18, "25"));
+    });
+    expect(errors(issues).some((i) => /every judge here is invented/i.test(i.message))).toBe(true);
+  });
+});
+
+/**
+ * A structural guarantee rather than a spot check: no authored choice anywhere in
+ * the set pieces can hand the household supplies. Relief comes from the recorded
+ * outcome or not at all, which is what makes the water at Marah land.
+ */
+describe("relief cannot be earned by choosing well", () => {
+  it("gives no set-piece choice anywhere a way to hand out provisions", () => {
+    for (const piece of Object.values(episode1.setPieces)) {
+      for (const phase of piece.phases) {
+        for (const choice of phase.choices) {
+          expect(choice, `${piece.id} > ${phase.id} > ${choice.id}`).not.toHaveProperty(
+            "provisions",
+          );
+        }
+      }
+    }
+  });
+
+  it("puts Marah's water on the outcome, where the player cannot reach it", () => {
+    const marah = episode1.setPieces["marah"]!;
+    expect(marah.outcome.provisions?.water).toBeGreaterThan(0);
+    expect(marah.phases.every((phase) => phase.futile)).toBe(true);
+  });
+});

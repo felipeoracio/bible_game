@@ -10,11 +10,13 @@
  */
 
 import type { CastMember, HouseholdEffect, Provisions, Terrain } from "@/content/types";
+import type { RunnableSetPiece } from "./systems/setpiece";
 import { freshMember, type MemberState } from "./systems/household";
 import { emptySchedule, firstPooledAtKm, type LegSchedule } from "./systems/events";
 import { emptyQuizProgress, type QuizProgress } from "./systems/quiz";
 import { freshWater, type WaterStore } from "./systems/water";
 import { freshManna, type MannaStore } from "./systems/manna";
+import type { SetPieceState } from "./systems/setpiece";
 
 export type Pace = "steady" | "quick" | "driving";
 
@@ -91,6 +93,18 @@ export interface GameState {
   /** Checkpoint waiting to be taken, set on arrival and cleared when it is done. */
   quizPending?: string;
 
+  // --- Set pieces -----------------------------------------------------------
+  /**
+   * The set piece on screen, if one is running. While this is set the march is
+   * suspended entirely — the crossing is not something you walk past.
+   */
+  setPiece?: SetPieceState;
+  /**
+   * The ruler of ten this household answers to after Jethro's reorganisation
+   * (Exodus 18:25). A `judges` id in the content. Persists for the rest of the run.
+   */
+  judgeId?: string;
+
   // --- Falling behind -------------------------------------------------------
   /**
    * Kilometres behind the head of the column. Grows when the household cannot hold
@@ -153,7 +167,16 @@ export type Action =
   /** Go out for the morning portion. `inTime` is false once the sun has grown hot. */
   | { type: "GATHER_MANNA"; inTime: boolean }
   /** Keep some back. Obedient on the sixth day, and the v20 mistake on any other. */
-  | { type: "LAY_ASIDE_MANNA"; omers: number };
+  | { type: "LAY_ASIDE_MANNA"; omers: number }
+  /** Enter a set piece. Scripted from a leg — never something the player opens. */
+  | { type: "BEGIN_SET_PIECE"; piece: RunnableSetPiece }
+  | { type: "SET_PIECE_CHOOSE"; piece: RunnableSetPiece; choiceId: string }
+  | { type: "SET_PIECE_ADVANCE"; piece: RunnableSetPiece }
+  /**
+   * Read the recorded outcome and apply it. Carries the judges the content has so
+   * Jethro can place the household without `src/sim` importing an episode.
+   */
+  | { type: "FINISH_SET_PIECE"; piece: RunnableSetPiece; judgeIds?: readonly string[] };
 
 /**
  * Takes only the shape it needs from a content `Leg`, so the simulation stays

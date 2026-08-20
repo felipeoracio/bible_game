@@ -326,10 +326,50 @@ Caught by looking at the screen, and now pinned by a test.
 Codex: "The back of the column", unlocked on Leg 1 since the column is there from the start.
 Deuteronomy 25:17-18 and Exodus 17:8-9 are bundled; `BookId` widened for Deuteronomy.
 
-**F12 · Set pieces** — four bespoke sequences, four different verbs: the crossing (held-breath
-traversal), Marah (scarcity resolved outside player control), Rephidim (defensive stand, the
-battle turns on something the player sees but does not cause), Jethro (camp reorganisation,
-player assigned to a named judge who persists).
+**F12 · Set pieces** — ✅ built and verified, **dormant until legs 4, 5, 11 and 12**
+Four sequences, four different verbs. All four authored in full; the legs that reach them
+land in F14.
+*Done when:* each of the four plays end to end, and no choice in any of them can change what
+Scripture records happening.
+
+| | Verb | What the player actually does |
+|---|---|---|
+| **The crossing** | Go forward | Decides when to walk in, and who they carry |
+| **Marah** | Endure | Decides how to meet three days without water |
+| **Rephidim** | Watch | Decides where the family stands, and where to look |
+| **Jethro** | Be placed | Waits, or settles it themselves — then is assigned |
+
+**The invariant, made structural rather than remembered.** A set piece's outcome is a
+property of the set piece, not of any choice, and `SetPieceChoice` has **no `provisions`
+field at all**. So the water at Marah cannot be authored as a reward for choosing well —
+relief arrives because the text says it did. §5.3's rule enforced by the shape of the type
+rather than by an author's memory. Three tests hold the line: every path through a set piece
+yields the same outcome, no authored choice anywhere carries provisions, and the reducer
+ends Marah identically whichever option was taken while the *households* differ.
+
+Two of the four needed engine rules beyond phases, flagged by `mechanic` on the content:
+
+- **`amalek-at-the-rear`** — Deuteronomy 25:18 says Amalek "struck the rearmost of you, all
+  who were feeble behind you". Both halves are modelled and **averaged, not multiplied**:
+  multiplying would let a fit household at the very back come out nearly safe, which is the
+  opposite of the verse. This is what F11's lag was built for. Trust rises regardless of
+  exposure, because 17:13 is a deliverance every household watched.
+- **`appointed-to-a-judge`** — Exodus 18:25. Seeded, not chosen, because "assigned" is what
+  the text describes. Persists in `GameState.judgeId` for the rest of the run. The ranks are
+  recorded and cited; the man is invented, and the validator now *rejects* any judge tagged
+  otherwise, since Exodus 18 names none of them.
+
+The crossing and Marah needed no code at all — phases plus a recorded outcome expressed both,
+which is the content model working as intended.
+
+Validator additions: a set piece and its outcome must both be `recorded` and cite; a choice
+tagged `recorded` is an error, because the text says nothing about this invented household;
+phases and choices are checked for name tokens and duplicate ids like everything else.
+
+Verified by opening Marah with the skins empty and playing it through: both phases left the
+water at zero, and it filled only at the recorded outcome. Rephidim was opened at 18 km of
+lag and the view of the hill degraded to match, agreeing with the HUD's "Among the
+stragglers".
 
 **F13 · Save and progression** — ✅ built and verified
 localStorage, schema-versioned. Multiple household profiles, since this is played by

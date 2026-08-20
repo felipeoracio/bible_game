@@ -235,6 +235,94 @@ export function validateEpisode(episode: Episode): ValidationIssue[] {
     if (!referencedEvents.has(id)) warn(`event:${id}`, "is never reachable — no leg references it.");
   }
 
+  // --- Set pieces ------------------------------------------------------------
+  /*
+   * The four set pieces are where a Bible game is most tempted to let the player
+   * change what happened, so they are checked harder than anything else. The rule
+   * being enforced: the situation and its outcome are recorded and cited; the
+   * household's response to them is not, and must never claim to be.
+   */
+  for (const [id, piece] of Object.entries(episode.setPieces)) {
+    const where = `setpiece:${id}`;
+    if (piece.id !== id) error(where, `keyed as "${id}" but its id is "${piece.id}".`);
+    if (piece.title.trim().length === 0) error(where, "has no title.");
+    if (piece.intro.trim().length === 0) error(where, "has no intro.");
+    checkNames(where, `${piece.title} ${piece.intro}`);
+    checkProvenance(where, piece.provenance);
+
+    if (piece.provenance.tier !== "recorded") {
+      error(
+        where,
+        `is tagged ${piece.provenance.tier}. A set piece is one of the four recorded moments the episode is built on and must cite chapter and verse.`,
+      );
+    }
+
+    // The outcome is the part that is not ours to invent.
+    const outcomeWhere = `${where} > outcome`;
+    if (piece.outcome.text.trim().length === 0) error(outcomeWhere, "has no text.");
+    checkNames(outcomeWhere, piece.outcome.text);
+    checkProvenance(outcomeWhere, piece.outcome.provenance);
+    if (piece.outcome.provenance.tier !== "recorded") {
+      error(
+        outcomeWhere,
+        `is tagged ${piece.outcome.provenance.tier}. What happens at a set piece is recorded, or the player is being told Scripture says something it does not.`,
+      );
+    }
+
+    if (piece.phases.length === 0) error(where, "has no phases.");
+    duplicates(`${where} > phases`, piece.phases.map((phase) => phase.id));
+
+    for (const phase of piece.phases) {
+      const phaseWhere = `${where} > phase:${phase.id}`;
+      if (phase.body.trim().length === 0) error(phaseWhere, "has no body text.");
+      checkNames(phaseWhere, phase.body);
+      checkProvenance(phaseWhere, phase.provenance);
+
+      duplicates(`${phaseWhere} > choices`, phase.choices.map((choice) => choice.id));
+      for (const choice of phase.choices) {
+        const choiceWhere = `${phaseWhere} > ${choice.id}`;
+        if (choice.label.trim().length === 0) error(choiceWhere, "has no label.");
+        if (choice.outcome.trim().length === 0) error(choiceWhere, "has no outcome text.");
+        checkNames(choiceWhere, `${choice.label} ${choice.outcome}`);
+        checkProvenance(choiceWhere, choice.provenance);
+
+        /*
+         * What your household did is yours. Tagging it recorded would be claiming
+         * Scripture describes this invented family's decision, which it does not.
+         */
+        if (choice.provenance.tier === "recorded") {
+          error(
+            choiceWhere,
+            "is tagged recorded. A set-piece choice is what your invented household did, and the text says nothing about them.",
+          );
+        }
+      }
+    }
+
+    for (const codexId of piece.unlocks ?? []) {
+      if (!episode.codex[codexId]) error(where, `unlocks unknown Codex entry "${codexId}".`);
+      unlockedSomewhere.add(codexId);
+    }
+  }
+
+  duplicates("judges", episode.judges.map((judge) => judge.id));
+  for (const judge of episode.judges) {
+    const where = `judge:${judge.id}`;
+    if (judge.name.trim().length === 0) error(where, "has no name.");
+    checkProvenance(where, judge.provenance);
+    /*
+     * Exodus 18 records the offices and names nobody who held one. Presenting an
+     * invented ruler of ten as a recorded person would be putting a name into the
+     * text that is not in it.
+     */
+    if (judge.provenance.tier !== "invented") {
+      error(
+        where,
+        `is tagged ${judge.provenance.tier}. Exodus 18 records the ranks but names none of the men, so every judge here is invented.`,
+      );
+    }
+  }
+
   /*
    * An entry nothing unlocks can never be read, however well written. That is worse
    * than a missing entry, because it looks finished in the source and is invisible

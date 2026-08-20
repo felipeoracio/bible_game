@@ -20,7 +20,7 @@ for (const episode of episodes) {
   errorCount += errors.length;
   warningCount += warnings.length;
 
-  const counts = `${episode.legs.length} legs, ${Object.keys(episode.events).length} events, ${Object.keys(episode.codex).length} Codex entries, ${Object.keys(episode.quizzes).length} quizzes`;
+  const counts = `${episode.legs.length} legs, ${Object.keys(episode.events).length} events, ${Object.keys(episode.codex).length} Codex entries, ${Object.keys(episode.quizzes).length} quizzes, ${Object.keys(episode.setPieces).length} set pieces`;
 
   if (issues.length === 0) {
     console.log(`ok  ${episode.id} — ${counts}`);

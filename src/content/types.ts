@@ -165,6 +165,109 @@ export interface GameEvent {
   unlocks?: string[];
 }
 
+// --- Set pieces --------------------------------------------------------------
+
+/**
+ * A set piece: the crossing, Marah, Rephidim, Jethro (§5.7).
+ *
+ * These are the four moments the whole game is arranged around, and they are the
+ * sharpest test of its central bet — that a player can have real agency inside
+ * events Scripture has already settled. The shape below is what keeps that bet
+ * honest, and it is deliberately a *different* shape from `GameEvent`:
+ *
+ *   - The **outcome is a property of the set piece, not of any choice.** What
+ *     happens at Marah is fixed before the player opens their mouth. Choices sit
+ *     on phases; the outcome sits above them and cannot be reached from one.
+ *   - **A choice carries no `provisions`.** Only the outcome does. That single
+ *     omission is what makes the water at Marah impossible to author as a reward
+ *     for picking well — relief arrives because the text says it did, and for no
+ *     other reason. It is §5.3's rule made structural rather than remembered.
+ *
+ * So a set piece cannot be written wrongly by an author having an off day. The
+ * validator enforces the rest.
+ */
+export interface SetPieceChoice {
+  id: string;
+  label: string;
+  provenance: Provenance;
+  /** Shown once taken. Says what your household did, never what the event did. */
+  outcome: string;
+  /**
+   * Moves your household only. There is deliberately no `provisions` here: a set
+   * piece's supply comes from its recorded outcome or not at all.
+   */
+  effects?: HouseholdEffect;
+}
+
+export interface SetPiecePhase {
+  id: string;
+  body: string;
+  provenance: Provenance;
+  choices: SetPieceChoice[];
+  /**
+   * Nothing chosen here changes the situation.
+   *
+   * Marah's water is still bitter whichever option is taken, and the game does not
+   * pretend otherwise. Choices in a futile phase still cost or comfort the
+   * household — they simply cannot solve the problem, because the household is not
+   * who solves it.
+   */
+  futile?: boolean;
+}
+
+/** What Scripture records happening, whatever the player did. */
+export interface SetPieceOutcome {
+  text: string;
+  /** Always `recorded`: this is the part that is not ours to invent. */
+  provenance: Provenance;
+  /**
+   * Relief the outcome hands over — the water made sweet, the spring at Elim. The
+   * only route by which a set piece adds anything to the household's supply.
+   */
+  provisions?: Provisions;
+  /** Applied once, after the outcome is read. */
+  effects?: HouseholdEffect;
+}
+
+/**
+ * A rule the engine has to run for this set piece, beyond sequencing its phases.
+ *
+ * Two of the four need one. The crossing and Marah are expressible entirely as
+ * phases and a recorded outcome, which is the shape working as intended; these two
+ * are not, because they depend on state the content cannot see.
+ */
+export type SetPieceMechanic =
+  /** Deuteronomy 25:18 — how badly Amalek catches you depends on how far back you are. */
+  | "amalek-at-the-rear"
+  /** Exodus 18:25 — the household is placed under a ruler of ten, who persists. */
+  | "appointed-to-a-judge";
+
+/**
+ * A ruler of ten, one of whom the household is placed under (Exodus 18:25).
+ *
+ * The office is recorded and cited; the person holding it is invented, because the
+ * text names none of them. Both halves are labelled, which is the whole point.
+ */
+export interface Judge {
+  id: string;
+  name: string;
+  /** One line of characterisation, shown when the household is placed under him. */
+  description: string;
+  provenance: Provenance;
+}
+
+export interface SetPiece {
+  id: string;
+  title: string;
+  mechanic?: SetPieceMechanic;
+  provenance: Provenance;
+  /** Scene-setting, before the first phase. */
+  intro: string;
+  phases: SetPiecePhase[];
+  outcome: SetPieceOutcome;
+  unlocks?: string[];
+}
+
 /**
  * Who is in the player's household.
  *
@@ -244,6 +347,10 @@ export interface Episode {
   events: Record<string, GameEvent>;
   codex: Record<string, CodexEntry>;
   quizzes: Record<string, Quiz>;
+  /** The four set pieces. Reached from a leg, which F14 authors. */
+  setPieces: Record<string, SetPiece>;
+  /** Invented rulers of ten. Jethro's set piece places the household under one. */
+  judges: Judge[];
   /** The player's household, in marching order — the head first. */
   household: CastMember[];
   /** Trades offered during character creation. */

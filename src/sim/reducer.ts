@@ -6,6 +6,18 @@ import { drink, refill, thirstPenalty, widenCapacity } from "./systems/water";
 import { dawn, eat, freshManna, gather, layAside } from "./systems/manna";
 import { advanceLag } from "./systems/column";
 import { settleAll } from "./systems/fracture";
+import {
+  advance as advanceSetPiece,
+  atOutcome,
+  begin as beginSetPiece,
+  choose as chooseInSetPiece,
+  currentPhase,
+  effectOf,
+  finish as finishSetPiece,
+  outcomeOf,
+} from "./systems/setpiece";
+import { exposure, harm } from "./systems/rephidim";
+import { assign as assignJudge } from "./systems/jethro";
 import type { Action, GameState } from "./types";
 
 /**
@@ -21,6 +33,9 @@ export function reduce(state: GameState, action: Action): GameState {
     case "TRAVEL": {
       // The column halts while something is happening. Nothing accumulates.
       if (state.activeEventId !== undefined) return state;
+      // And a set piece is not something you can walk past: the sea is in the way
+      // until it is finished with you.
+      if (state.setPiece !== undefined && !state.setPiece.finished) return state;
       if (action.km <= 0) return state;
 
       const distanceKm = Math.min(state.distanceKm + action.km, state.legDistanceKm);
@@ -152,6 +167,90 @@ export function reduce(state: GameState, action: Action): GameState {
       if (state.mannaDay <= 0) return state;
       const manna = layAside(state.manna, state.mannaDay, action.omers);
       return manna === state.manna ? state : { ...state, manna };
+    }
+
+    // --- Set pieces ---------------------------------------------------------
+    /*
+     * The march stops dead for these. `TRAVEL` already refuses to move while an
+     * event is open; a set piece is the same idea with the volume turned up, and
+     * the scene has no way to walk past one.
+     */
+    case "BEGIN_SET_PIECE":
+      return state.setPiece ? state : { ...state, setPiece: beginSetPiece(action.piece.id) };
+
+    case "SET_PIECE_CHOOSE": {
+      if (!state.setPiece) return state;
+      const phase = currentPhase(action.piece, state.setPiece);
+      if (!phase) return state;
+
+      const setPiece = chooseInSetPiece(action.piece, state.setPiece, action.choiceId);
+      if (setPiece === state.setPiece) return state;
+
+      // What the player chose moves their household, and only their household.
+      const effect = effectOf(action.piece, phase.id, action.choiceId);
+      const household = effect
+        ? settleAll(applyEffectAll(state.household, effect))
+        : state.household;
+
+      return { ...state, setPiece, household };
+    }
+
+    case "SET_PIECE_ADVANCE": {
+      if (!state.setPiece) return state;
+      const setPiece = advanceSetPiece(action.piece, state.setPiece);
+      return setPiece === state.setPiece ? state : { ...state, setPiece };
+    }
+
+    case "FINISH_SET_PIECE": {
+      if (!state.setPiece || state.setPiece.finished) return state;
+      if (!atOutcome(action.piece, state.setPiece)) return state;
+
+      /*
+       * The recorded outcome. Read straight off the content — there is deliberately
+       * no path from `state.setPiece.taken` to anything below, because what happened
+       * at the sea is not a function of what this household decided to do about it.
+       */
+      const outcome = outcomeOf(action.piece);
+
+      let household = outcome.effects
+        ? applyEffectAll(state.household, outcome.effects)
+        : state.household;
+
+      // Deuteronomy 25:18: what Amalek costs you depends on where you were standing,
+      // which was settled over the preceding legs rather than in this moment.
+      if (action.piece.mechanic === "amalek-at-the-rear") {
+        household = applyEffectAll(household, harm(exposure(state.lagKm, household)));
+      }
+      household = settleAll(household);
+
+      // Scripted relief, on the same footing as every other: the outcome hands it
+      // over, and no choice can.
+      let water = state.water;
+      if (outcome.provisions?.waterCapacity) {
+        water = widenCapacity(water, outcome.provisions.waterCapacity);
+      }
+      if (outcome.provisions?.water) water = refill(water, outcome.provisions.water);
+
+      // Exodus 18:25 — the household is placed under a ruler of ten, who persists.
+      let judgeId = state.judgeId;
+      let seed = state.seed;
+      if (action.piece.mechanic === "appointed-to-a-judge" && judgeId === undefined) {
+        const placed = assignJudge(action.judgeIds ?? [], seed);
+        if (placed) {
+          judgeId = placed.judgeId;
+          seed = placed.seed;
+        }
+      }
+
+      return {
+        ...state,
+        household,
+        water,
+        judgeId,
+        seed,
+        setPiece: finishSetPiece(state.setPiece),
+        unlockedCodex: unlock(state.unlockedCodex, [...(action.piece.unlocks ?? [])]),
+      };
     }
 
     case "DECIDE": {
