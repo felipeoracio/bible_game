@@ -286,3 +286,22 @@ describe("a week of it", () => {
     for (const member of household) expect(member.condition).toBe(100);
   });
 });
+
+/** Exodus 16:2 — the whole congregation murmured against Moses and Aaron. */
+describe("going to bed hungry", () => {
+  it("costs trust as well as body and spirit", () => {
+    const { household } = eat(freshManna(), family());
+    for (const member of household) expect(member.trust).toBeLessThan(80);
+  });
+
+  it("costs no trust on a night the household ate its fill", () => {
+    const { household } = aDay(freshManna(), 1);
+    for (const member of household) expect(member.trust).toBe(80);
+  });
+
+  it("costs less on a night they were only half fed", () => {
+    const half = eat({ fresh: 2, laidAside: 0, laidAsideOn: 0, gatheredToday: true }, family());
+    const none = eat(freshManna(), family());
+    expect(half.household[0]!.trust).toBeGreaterThan(none.household[0]!.trust);
+  });
+});

@@ -130,7 +130,24 @@ export function drink(
         ? -km * 3.2 * shortfall * THIRST_FRAILTY[member.role]
         : km * 0.6;
     const hydration = clamp(member.water + change);
-    return hydration === member.water ? member : { ...member, water: hydration };
+
+    /*
+     * And they blame you for it.
+     *
+     * Exodus 17:3 is unambiguous about what thirst does to a household's
+     * confidence in whoever is leading it: "the people were thirsty for water
+     * there; and the people murmured against Moses". Without this, trust had no
+     * systemic drain at all — it moved only on authored choices and on driving an
+     * already-suffering household — and a playthrough that went badly in every
+     * other respect still finished with the family perfectly loyal. Fracture was
+     * unreachable in practice. Found by playing the whole episode adversarially.
+     */
+    const trust =
+      shortfall > 0 ? clamp(member.trust - km * 0.3 * shortfall) : member.trust;
+
+    return hydration === member.water && trust === member.trust
+      ? member
+      : { ...member, water: hydration, trust };
   });
 
   return {

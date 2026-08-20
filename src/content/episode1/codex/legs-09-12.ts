@@ -1,0 +1,68 @@
+import { recorded, reasoned, ref, type CodexEntry } from "../../types";
+
+/** Codex entries for legs 9 to 12 — Dophkah to the mountain. */
+export const legs0912Codex: CodexEntry[] = [
+  {
+    id: "dophkah",
+    title: "Dophkah",
+    kind: "waypoint",
+    note: "A name in a list. Numbers 33 records that Israel travelled from the wilderness of Sin and camped in Dophkah, and that is the whole of what the Bible says about the place — it appears nowhere else, and nobody knows where it was. Between two of the most famous events in the book there are stages about which nothing whatever is recorded, and people walked them.",
+    provenance: recorded(ref("numbers", 33, "12")),
+    passages: [ref("numbers", 33, "12")],
+    related: ["alush", "the-red-sea-camp", "how-far-was-it"],
+  },
+  {
+    id: "alush",
+    title: "Alush",
+    kind: "waypoint",
+    note: "The same again, and it is worth sitting with. Israel travelled from Dophkah and camped in Alush, and that sentence is everything Scripture contains about the place. No water mentioned, no event, no landmark. Two consecutive stages of the most closely recorded journey in the Bible, and all either of them gets is a name — which is a useful thing to know about the parts of a life that do not make it into the account.",
+    provenance: recorded(ref("numbers", 33, "13")),
+    passages: [ref("numbers", 33, "13")],
+    related: ["dophkah", "wilderness-of-sin", "how-far-was-it"],
+  },
+  {
+    id: "the-sabbath-in-the-wilderness",
+    title: "The first Sabbath",
+    kind: "note",
+    note: "The seventh-day rest turns up here as a practical instruction about food, before it is ever given as a commandment at Sinai. On the sixth day twice as much manna falls, and what is kept overnight — which rots on every other night of the week — does not rot. Then on the seventh, none falls at all. Some people go out to gather anyway and find nothing, and the reply is a question: how long will you refuse to keep my commandments? The rhythm is taught by a week of breakfasts before it is written on stone.",
+    provenance: recorded(ref("exodus", 16, "22-23"), ref("exodus", 16, "27-30")),
+    passages: [ref("exodus", 16, "22-30")],
+    related: ["a-days-portion", "dophkah"],
+  },
+  {
+    id: "massah-and-meribah",
+    title: "No water at Rephidim",
+    kind: "waypoint",
+    note: "Numbers 33 does something unusual here: instead of just naming the camp, it adds why the camp mattered — Rephidim, where there was no water for the people to drink. Exodus tells the rest. The people quarrel with Moses and ask whether he brought them out of Egypt to kill them and their children and their livestock with thirst. Moses is told to take the elders and the rod he struck the Nile with, and to strike a rock at Horeb, and water comes out of it for the people to drink. He names the place for the quarrelling and the testing. This is the second time in this journey that thirst has been answered by something nobody in the camp did.",
+    provenance: recorded(ref("numbers", 33, "14"), ref("exodus", 17, "1-3"), ref("exodus", 17, "5-6")),
+    passages: [ref("exodus", 17, "1-7")],
+    related: ["marah-note", "water-in-the-wilderness", "the-rearmost"],
+  },
+  {
+    id: "jethro-note",
+    title: "Jethro",
+    kind: "note",
+    note: "Moses' father-in-law comes out to the wilderness to meet him at the mountain of God, bringing Moses' wife and his two sons — who, it turns out, had not been with him for any of this. Moses goes out, bows, kisses him, and tells him everything that has happened: what was done to Pharaoh, all the hardship on the road, and how they were delivered. It is the only place in the whole journey where somebody sits down and tells the story of it out loud, and the man he tells it to is family.",
+    provenance: recorded(ref("exodus", 18, "5"), ref("exodus", 18, "7-8")),
+    passages: [ref("exodus", 18, "5-8")],
+    related: ["rulers-of-tens", "the-wilderness-of-sinai"],
+  },
+  {
+    id: "the-wilderness-of-sinai",
+    title: "The wilderness of Sinai",
+    kind: "waypoint",
+    note: "The last camp of this journey. In the third month after coming out of Egypt, on that same day, they came into the wilderness of Sinai; and having departed from Rephidim they camped in the wilderness, and Israel camped there before the mountain. Everything this episode has been walking toward is that last clause. What happens at the mountain is the beginning of something else, and it is not this game — Episode 1 ends with your household camped in front of it, which is exactly where the text puts them.",
+    provenance: recorded(ref("exodus", 19, "1-2"), ref("numbers", 33, "15")),
+    passages: [ref("exodus", 19, "1-2"), ref("numbers", 33, "15")],
+    related: ["jethro-note", "how-long-a-day", "what-the-player-cannot-change"],
+  },
+  {
+    id: "the-whole-itinerary",
+    title: "The whole route, in order",
+    kind: "note",
+    note: "Rameses, Succoth, Etham, Pi-hahiroth, through the sea, Marah, Elim, the Red Sea, the wilderness of Sin, Dophkah, Alush, Rephidim, the wilderness of Sinai. Twelve stages, and every one of them is in Numbers 33 in that order — it is a list somebody sat down and wrote out, camp by camp. What the list does not contain is a single distance, a single day count between stages, or any indication of how long they stayed anywhere. Everything in this game that looks like a number came from us, and everything that looks like a place name came from there.",
+    provenance: recorded(ref("numbers", 33, "5-15")),
+    passages: [ref("numbers", 33, "5-15")],
+    related: ["how-far-was-it", "how-long-a-day", "the-wilderness-of-sinai"],
+  },
+];

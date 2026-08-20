@@ -23,20 +23,33 @@ describe("the shipped content", () => {
   });
 
   /**
-   * Two set pieces are authored and not yet reachable, because the legs that reach
-   * them (11 and 12) are still to be written. That is a true and useful warning, so
-   * it is allowed by name rather than silenced — any *other* warning still fails,
-   * and the list shrinks as F14 lands the remaining legs. Marah came off it when
-   * leg 5 was written.
+   * Back to zero. This carried an allowlist through F14 while set pieces waited for
+   * the legs that reach them; the last of those landed with leg 12, so the strict
+   * gate is restored and any unreachable content fails the build again.
    */
-  it("warns about nothing except the set pieces still waiting for their legs", () => {
-    const pending = ["setpiece:rephidim", "setpiece:jethro"];
+  it("has no warnings either", () => {
     const warnings = validateEpisode(episode1).filter((i) => i.level === "warning");
-    const unexpected = warnings.filter((w) => !pending.includes(w.where));
-    expect(unexpected, unexpected.map((w) => `${w.where}: ${w.message}`).join("\n")).toHaveLength(
-      0,
+    expect(warnings, warnings.map((w) => `${w.where}: ${w.message}`).join("\n")).toHaveLength(0);
+  });
+
+  it("walks the whole itinerary, and every set piece is reachable on it", () => {
+    expect(episode1.legs).toHaveLength(12);
+    expect(episode1.legs.map((leg) => leg.index)).toEqual([...Array(12)].map((_, i) => i + 1));
+
+    // Each leg starts where the last one finished.
+    for (let i = 1; i < episode1.legs.length; i++) {
+      expect(episode1.legs[i]!.from).toBe(episode1.legs[i - 1]!.to);
+    }
+
+    const reached = episode1.legs.flatMap((leg) =>
+      leg.setPiece ? [leg.setPiece.setPieceId] : [],
     );
-    for (const w of warnings) expect(w.message).toMatch(/never reachable/);
+    expect(reached.sort()).toEqual(["jethro", "marah", "rephidim", "the-crossing"]);
+
+    // Manna begins on exactly one leg, and it is the wilderness of Sin.
+    const mannaLegs = episode1.legs.filter((leg) => leg.beginsManna);
+    expect(mannaLegs).toHaveLength(1);
+    expect(mannaLegs[0]!.index).toBe(8);
   });
 
   it("resolves every citation to real bundled text", () => {

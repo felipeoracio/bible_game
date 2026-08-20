@@ -108,7 +108,8 @@
           "28": "Yahweh said to Moses, “How long do you refuse to keep my commandments and my laws?",
           "29": "Behold, because Yahweh has given you the Sabbath, therefore he gives you on the sixth day the bread of two days. Everyone stay in his place. Let no one go out of his place on the seventh day.”",
           "30": "So the people rested on the seventh day.",
-          "31": "The house of Israel called its name Manna, and it was like coriander seed, white; and its taste was like wafers with honey."
+          "31": "The house of Israel called its name Manna, and it was like coriander seed, white; and its taste was like wafers with honey.",
+          "35": "The children of Israel ate the manna forty years, until they came to an inhabited land. They ate the manna until they came to the borders of the land of Canaan."
         },
         "17": {
           "1": "All the congregation of the children of Israel traveled from the wilderness of Sin, by their journeys, according to Yahweh’s commandment, and encamped in Rephidim; but there was no water for the people to drink.",
@@ -126,6 +127,10 @@
           "13": "Joshua defeated Amalek and his people with the edge of the sword."
         },
         "18": {
+          "5": "Jethro, Moses’ father-in-law, came with his sons and his wife to Moses into the wilderness where he was encamped, at the Mountain of God.",
+          "6": "He said to Moses, “I, your father-in-law Jethro, have come to you with your wife, and her two sons with her.”",
+          "7": "Moses went out to meet his father-in-law, and bowed and kissed him. They asked each other of their welfare, and they came into the tent.",
+          "8": "Moses told his father-in-law all that Yahweh had done to Pharaoh and to the Egyptians for Israel’s sake, all the hardships that had come on them on the way, and how Yahweh delivered them.",
           "13": "On the next day, Moses sat to judge the people, and the people stood around Moses from the morning to the evening.",
           "14": "When Moses’ father-in-law saw all that he did to the people, he said, “What is this thing that you do for the people? Why do you sit alone, and all the people stand around you from morning to evening?”",
           "15": "Moses said to his father-in-law, “Because the people come to me to inquire of God.",
@@ -140,6 +145,10 @@
           "24": "So Moses listened to the voice of his father-in-law, and did all that he had said.",
           "25": "Moses chose able men out of all Israel, and made them heads over the people, rulers of thousands, rulers of hundreds, rulers of fifties, and rulers of tens.",
           "26": "They judged the people at all times. They brought the hard causes to Moses, but every small matter they judged themselves."
+        },
+        "19": {
+          "1": "In the third month after the children of Israel had gone out of the land of Egypt, on that same day they came into the wilderness of Sinai.",
+          "2": "When they had departed from Rephidim, and had come to the wilderness of Sinai, they encamped in the wilderness; and there Israel encamped before the mountain."
         }
       }
     },
@@ -157,7 +166,11 @@
           "8": "They traveled from before Hahiroth, and crossed through the middle of the sea into the wilderness. They went three days’ journey in the wilderness of Etham, and encamped in Marah.",
           "9": "They traveled from Marah, and came to Elim. In Elim, there were twelve springs of water, and seventy palm trees; and they encamped there.",
           "10": "They traveled from Elim, and encamped by the Red Sea.",
-          "11": "They traveled from the Red Sea, and encamped in the wilderness of Sin."
+          "11": "They traveled from the Red Sea, and encamped in the wilderness of Sin.",
+          "12": "They traveled from the wilderness of Sin, and encamped in Dophkah.",
+          "13": "They traveled from Dophkah, and encamped in Alush.",
+          "14": "They traveled from Alush, and encamped in Rephidim, where there was no water for the people to drink.",
+          "15": "They traveled from Rephidim, and encamped in the wilderness of Sinai."
         }
       }
     },

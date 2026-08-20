@@ -171,3 +171,36 @@ describe("reading the situation", () => {
     expect(driven).toBeGreaterThan(0);
   });
 });
+
+/**
+ * Exodus 17:3 — "the people were thirsty for water there; and the people murmured
+ * against Moses". Trust had no systemic drain before this, and a run that went badly
+ * in every other way still ended with a perfectly loyal household, which made
+ * fracture unreachable. Found by playing the whole episode adversarially.
+ */
+describe("murmuring", () => {
+  it("costs trust when the household is going short", () => {
+    const dry = { litres: 0, capacity: STARTING_CAPACITY_L };
+    const { household } = drink(dry, family(), 20, "steady", "open-desert");
+    for (const member of household) expect(member.trust).toBeLessThan(80);
+  });
+
+  it("costs nothing while there is water to drink", () => {
+    const { household } = drink(freshWater(), family(), 20, "steady", "delta-marsh");
+    for (const member of household) expect(member.trust).toBe(80);
+  });
+
+  it("bites harder the longer the stretch without water", () => {
+    const dry = { litres: 0, capacity: STARTING_CAPACITY_L };
+    const short = drink(dry, family(), 5, "steady", "open-desert");
+    const long = drink(dry, family(), 30, "steady", "open-desert");
+    expect(long.household[0]!.trust).toBeLessThan(short.household[0]!.trust);
+  });
+
+  it("never drives trust below nothing", () => {
+    let household = family();
+    const dry = { litres: 0, capacity: STARTING_CAPACITY_L };
+    for (let i = 0; i < 40; i++) household = drink(dry, household, 30, "driving", "open-desert").household;
+    for (const member of household) expect(member.trust).toBe(0);
+  });
+});

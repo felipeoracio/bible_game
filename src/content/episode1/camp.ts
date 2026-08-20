@@ -364,3 +364,162 @@ export const legs0508CampEvents: GameEvent[] = [
     ],
   },
 ];
+
+/**
+ * Camp decisions for legs 9 to 12 — the last of the itinerary.
+ *
+ * The night before the mountain is the one that has to carry the ending. It asks
+ * the player to look at the household they arrived with rather than at Sinai, which
+ * is what the whole episode has actually been about.
+ */
+export const legs0912CampEvents: GameEvent[] = [
+  {
+    id: "camp-the-first-sabbath",
+    title: "A day with nothing to do in it",
+    body: "Nobody gathers, nobody packs, nobody walks. The camp is enormous and completely still, and after seven weeks of moving every single day your household has no idea what to do with itself.",
+    provenance: recorded(ref("exodus", 16, "29-30")),
+    choices: [
+      {
+        id: "sit-still",
+        label: "Sit still and let it be strange",
+        provenance: invented(),
+        outcome:
+          "You do nothing, badly, for a whole day. By the evening you have stopped listening for the order to move and something in your shoulders has come down.",
+        effects: { condition: 12, morale: 8 },
+      },
+      {
+        id: "find-work",
+        label: "Find something useful to do anyway",
+        provenance: invented(),
+        outcome:
+          "You mend and sort and repack and are the most rested-looking exhausted person in the camp. {tirzah} watches you do it and does not say anything, which is its own comment.",
+        effects: { condition: 3, trust: -4 },
+      },
+    ],
+  },
+  {
+    id: "camp-after-the-rock",
+    title: "The night after the rock",
+    body: "Everyone has drunk twice over and there is water standing in every vessel your household owns. {elon} wants to know whether that is going to happen every time. It is a fair question and you notice you do not want to answer it.",
+    provenance: reasoned(
+      "The water from the rock at Horeb is recorded; a household's evening afterwards, and this question, are invented.",
+      ref("exodus", 17, "6"),
+    ),
+    choices: [
+      {
+        id: "promise-nothing",
+        label: "Tell him you cannot promise that",
+        provenance: invented(),
+        outcome:
+          "You say that it has happened twice and that twice is not a rule. He accepts it. He also drinks a great deal more before bed than he needs to.",
+        effects: { trust: 7, morale: -3 },
+      },
+      {
+        id: "tell-him-yes",
+        label: "Tell him yes",
+        provenance: invented(),
+        outcome:
+          "You say it because he is a child at the end of a frightening day and because you would like it to be true, and you lie awake for a while afterwards.",
+        effects: { morale: 6, trust: -5 },
+      },
+    ],
+  },
+  {
+    id: "camp-before-the-mountain",
+    title: "The last night of the journey",
+    body: "The tents are up in front of the mountain and there is nowhere else to walk to. Three months ago you were counting bricks against a quota. {tirzah} asks you, in the ordinary voice she uses for ordinary questions, whether you would do it again.",
+    provenance: reasoned(
+      "Israel camping before the mountain is recorded; the household's last evening of the journey is invented, and is the game's ending rather than the text's.",
+      ref("exodus", 19, "2"),
+    ),
+    choices: [
+      {
+        id: "yes-again",
+        label: "Say yes",
+        provenance: invented(),
+        outcome:
+          "You say it without having to think, and then you spend a while afterwards checking whether you meant it. You did.",
+        effects: { morale: 8, trust: 6 },
+      },
+      {
+        id: "not-sure",
+        label: "Say you do not know",
+        provenance: invented(),
+        outcome:
+          "You count what it cost — the road, the thirst, the people at the back — and you tell her honestly that you cannot answer. She says that is fair, and stays sitting with you.",
+        effects: { trust: 8, morale: -2 },
+      },
+      {
+        id: "ask-her-back",
+        label: "Ask her the same question",
+        provenance: invented(),
+        outcome:
+          "She thinks about it for a long time, which frightens you, and then she says that she would, and that she is glad it was with you. You do not sleep much and you do not mind.",
+        effects: { morale: 10, trust: 10 },
+      },
+    ],
+  },
+];
+
+/**
+ * Two more camps, so that no leg has to borrow another leg's evening.
+ *
+ * A camp decision is only offered once per run — the record of it is what carries
+ * forward — so two legs sharing one leaves the second with a silent camp screen.
+ */
+export const sharedCampFixes: GameEvent[] = [
+  {
+    id: "camp-by-the-sea-again",
+    title: "Back beside water, and nothing to do about it",
+    body: "Camped by the sea, which after Marah ought to feel like something and does not, because it is the wrong kind of water and everybody knows it. {milcah} asks why you cannot drink this one either.",
+    provenance: reasoned(
+      "Numbers 33:10 records the camp by the Red Sea and nothing else about it; a household's evening there is invented.",
+      ref("numbers", 33, "10"),
+    ),
+    choices: [
+      {
+        id: "explain-the-salt",
+        label: "Explain about salt water",
+        provenance: invented(),
+        outcome:
+          "You explain it twice and she believes you the second time. {elon} tries a mouthful behind your back to check, and then believes you as well.",
+        effects: { morale: 4, trust: 3 },
+      },
+      {
+        id: "let-them-swim",
+        label: "Let them go in",
+        provenance: invented(),
+        outcome:
+          "You let all three of them into the shallows and they come out salted and filthy and happier than they have been since Elim. It costs you the last of the fresh water rinsing them.",
+        effects: { morale: 9, condition: -5 },
+      },
+    ],
+  },
+  {
+    id: "camp-a-place-with-only-a-name",
+    title: "Camped at Alush",
+    body: "You arrive, and it is a place, and there is nothing here that anybody will ever write down. The tents go up in the same order they have gone up for a month. {naamah} says that she has stopped asking what anywhere is called.",
+    provenance: reasoned(
+      "Numbers 33:13 names Alush and records nothing else about it; a household's unremarkable evening there is invented, which is the honest response to a silent verse.",
+      ref("numbers", 33, "13"),
+    ),
+    choices: [
+      {
+        id: "learn-the-name-anyway",
+        label: "Make sure your household knows where they slept",
+        provenance: invented(),
+        outcome:
+          "You make all four of them say it, because one day somebody is going to ask them where they went and you would like them to be able to answer properly.",
+        effects: { morale: 4, trust: 4 },
+      },
+      {
+        id: "let-it-go",
+        label: "Let it be another night",
+        provenance: invented(),
+        outcome:
+          "Nobody learns the name and nobody needs it. It is a night's sleep in a place, and there have been a great many of those, and they have all counted.",
+        effects: { condition: 5 },
+      },
+    ],
+  },
+];

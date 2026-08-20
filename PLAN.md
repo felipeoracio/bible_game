@@ -510,9 +510,60 @@ the stages back to back and the real journey plainly did not. The Codex entry "H
 a day's march?" says so in as many words — the date in the text is right, the number on
 screen is the game's, and it is short.
 
-**Still to write:** legs 9 to 12 — Dophkah, Alush, Rephidim (Amalek), and Sinai (Jethro).
-Those two set pieces are the last dormant content, and the validator warns about them by
-name until their legs exist.
+**Legs 9 to 12 — built and verified. The itinerary is complete.** Twelve legs, Rameses to
+the mountain, and **nothing in the episode is dormant any more** — all four set pieces are
+reachable, all 34 Codex entries open in a single playthrough, and the validator is back to
+zero warnings.
+
+| | Stage | The leg is about |
+|---|---|---|
+| **9** | the wilderness of Sin → Dophkah | The sixth day, and the first Sabbath |
+| **10** | Dophkah → Alush | A place that is only a name |
+| **11** | Alush → Rephidim | No water, the rock, and then Amalek |
+| **12** | Rephidim → the wilderness of Sinai | Jethro, and the mountain |
+
+**Dophkah and Alush answer a question leg 7 raised.** Numbers 33 gives each a name and not
+one other word, and neither appears anywhere else in Scripture. Leg 7 met that silence by
+being quiet; these two meet it better — **the place is silent but the calendar is not.**
+Manna began in the wilderness of Sin, so the first sixth day and the first Sabbath land on
+exactly these stages. There is plenty recorded happening; it simply is not happening to the
+ground.
+
+**Rephidim needed a structural answer.** Two recorded crises land on one stage — no water
+(Numbers 33:14 says so outright) and Amalek — and a leg may hold only one set piece. Amalek
+is the set piece; the rock at Horeb is scripted with **exactly one choice**. That is how the
+same guarantee is kept with the ordinary event system: there is nothing to choose, so the
+water cannot be a reward for choosing well. If a second option is ever added there, the
+provisions must move onto both.
+
+**Two real problems surfaced by playing the finished episode, not by reading it.**
+
+*Trust had no systemic drain.* Playing adversarially — worst choice every time, driving pace,
+never resting — trust bottomed out at **46**. Fracture triggers at 8. So F11's fracture, and
+the `divided` and `scattered` endings built in F11, were **unreachable in any real
+playthrough**: a whole feature nobody could ever see. Trust only moved on authored choices
+and on driving an already-suffering household, while the recorded outcomes handed back large
+positive amounts.
+
+The fix is straight out of the text. Exodus 17:3 — "the people were thirsty for water there;
+and the people murmured against Moses". Exodus 16:2 — "the whole congregation murmured
+against Moses and against Aaron". Thirst and hunger now cost trust in proportion to the
+shortfall. After it, the spread is real:
+
+| | lowest trust | final standing |
+|---|---|---|
+| careful play | 78 | whole (5/5) |
+| adversarial | 0 | scattered (0/5) |
+
+*Condition pins at zero* across the dry stretch from Elim to the rock — four legs on one
+fill, because the text records no water between them. That is designed pressure and the
+player's levers are real (fill everything at Elim for +10 capacity, walk steady, camp often),
+but the axis does saturate in the back half. Left as is: nobody dies, every path finishes,
+and inventing a spring would break §5.3.
+
+**F14 is complete.** Walked end to end: the four set pieces fire on legs 4, 5, 11 and 12, the
+household is placed under a named judge, and the run ends camped in front of the mountain —
+which is exactly where Exodus 19:2 leaves them.
 
 **F14 · Legs 2–12** — the content pour. Each leg written, tier-tagged, and signed off by the
 reviewer per leg, not per project. Legs 9 and 10 (Dophkah, Alush) are the proof of concept:

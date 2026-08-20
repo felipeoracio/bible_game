@@ -157,9 +157,17 @@ export function eat(manna: MannaStore, household: readonly MemberState[]): EatRe
     // complaint in v2-3 is that they would rather have died full in Egypt.
     const condition = clamp(member.condition + (shortfall > 0 ? -14 * shortfall : 2));
     const morale = clamp(member.morale + (shortfall > 0 ? -10 * shortfall : 1));
-    return condition === member.condition && morale === member.morale
+    /*
+     * Exodus 16:2 — the whole congregation murmured against Moses and Aaron. A
+     * household that goes to bed hungry does not blame the wilderness; it blames
+     * whoever said to walk into it. Same reasoning as the thirst drain in
+     * `water.ts`, and the same discovery: without it, trust never fell far enough
+     * for anybody to stop following.
+     */
+    const trust = clamp(member.trust + (shortfall > 0 ? -5 * shortfall : 0));
+    return condition === member.condition && morale === member.morale && trust === member.trust
       ? member
-      : { ...member, condition, morale };
+      : { ...member, condition, morale, trust };
   });
 
   return {
