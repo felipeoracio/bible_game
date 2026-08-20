@@ -108,11 +108,16 @@ right edge as you reach the camp. Legs without art fall back to generated layers
 legs 2–12 stay playable before their art exists.
 
 Brief for the remaining eleven backdrops:
-- **One continuous panorama per leg**, scaled to the canvas height and at least
-  `legDistanceKm × 200` pixels wide once scaled (Leg 1: 2172px). Narrower art cannot
-  cover the leg and will run out before the camp.
-- **Never tiled**, so the lighting is free to travel across it — Leg 1 runs sunset over
-  Egypt to daylight at Succoth, which is the whole point of it.
+- **One continuous panorama per leg**, exported at exactly the canvas height (360px) so
+  Phaser draws it at scale 1.0 and never resamples it. Width is free: the scroll factor
+  is `min((width − 640) / (legDistanceKm × 200), 1)`, so **any** panorama narrower than
+  `legDistanceKm × 200 + 640` is consumed exactly edge to edge. Art *wider* than that is
+  the case to avoid — it pins to 1:1 and the player arrives before reaching its right
+  edge. For Leg 1 that ceiling is 6640px; the art in use is 1916px.
+- **Never tiled**, so the lighting is free to travel across it — Leg 1 runs night over
+  Rameses to full daylight at Succoth, which is the whole point of it. Exodus 12:31 has
+  Pharaoh sending them out in the night, so the leg begins under a moon and the sun
+  comes up as Egypt falls behind.
 - **Include the foreground.** A painted leg draws no generated ground; the artwork is
   the ground the household walks on, and covering its lower third throws away the best
   of it. The household stands at 72% of the canvas height.
