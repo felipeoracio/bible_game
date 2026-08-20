@@ -23,6 +23,8 @@ export interface LegSchedule {
   scripted: { eventId: string; atProgress: number }[];
   /** The set piece this leg reaches, if it has one. */
   setPiece?: { setPieceId: string; atProgress: number };
+  /** True for the leg where manna begins. */
+  beginsManna?: boolean;
   pool: string[];
   /** Codex entry opened by reaching the end of the leg. */
   waypoint?: string;

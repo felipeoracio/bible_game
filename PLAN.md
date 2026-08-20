@@ -463,8 +463,56 @@ Jethro); the test allows exactly those by name so any *new* warning still fails 
 One test quietly rotted and was caught: "catches a Codex entry linking to nothing" used
 `etham` as its example of a non-existent entry, and Leg 2 made Etham real.
 
-**Still to write:** legs 5 to 12 — Marah, Elim, the Red Sea, the wilderness of Sin (manna
-begins), Dophkah, Alush, Rephidim, and Sinai.
+**Legs 5 to 8 — built and verified.** Two dormant systems are now live in play: Marah's
+relief is reachable, and manna begins.
+
+| | Stage | The leg is about |
+|---|---|---|
+| **5** | the far shore → Marah | The song, then three dry days, then bitter water |
+| **6** | Marah → Elim | The statute, and twelve springs after all that |
+| **7** | Elim → the Red Sea | Nothing. One line in Numbers 33 and nothing else |
+| **8** | the Red Sea → the wilderness of Sin | The meat pots, and bread from the sky |
+
+Leg 5 is the shape of the episode in miniature: Exodus 15 puts the Song of the Sea and
+Miriam's dancing immediately after the crossing, and then three verses later, three days
+without water. Nothing on that leg gives the household a drink, because the text gives them
+none until the tree goes into the pool.
+
+Leg 7 is the first leg whose honest subject is **how little the text says**. Numbers 33:10 is
+one line — travelled from Elim, camped by the Red Sea — and its Codex entry says outright
+that almost everything the household does there is invented, because there is nothing
+recorded to build it from. Not every day of the Exodus was a crisis.
+
+`beginsManna` is set on exactly one leg and fires on *arrival*, so the first camp in the
+wilderness of Sin is a manna morning. Like the water refills, there is no button.
+
+**A real balance flaw surfaced by walking the whole itinerary, not by reading the code.**
+Lag compounded without limit: a household at 34 condition finished the 54 km leg 5 *forty
+kilometres* adrift, and at steady pace could never regain a metre — the break-even was
+condition 100. So the household hit "stragglers" on leg 5 and stayed there for the rest of
+the episode.
+
+The fix is truer to the text than what it replaced. **Numbers 33 is a list of camps**: the
+column stops at the same place every night, so a household walking in two hours late still
+walks in. Camping now closes three quarters of the gap. What arriving late costs is the
+night itself — `restShare` scales recovery by how far behind you were, floored at 45% so a
+bad night is never a lost one. That turns an unbounded runaway into a real, escapable loop:
+behind → less rest → slower → further behind, broken by pushing the pace, which has its own
+price.
+
+Walked with a household resting the way one actually would (every ~20 km), the eight legs
+now read: full condition and with the column through leg 4; body 40 at Marah; 15 to 25
+across the back half, recovering rather than pinned.
+
+**One inconsistency is now stated rather than hidden.** Exodus 16:1 dates the wilderness of
+Sin to a month out of Egypt; the game's counter gets there around day 16, because it walks
+the stages back to back and the real journey plainly did not. The Codex entry "How long was
+a day's march?" says so in as many words — the date in the text is right, the number on
+screen is the game's, and it is short.
+
+**Still to write:** legs 9 to 12 — Dophkah, Alush, Rephidim (Amalek), and Sinai (Jethro).
+Those two set pieces are the last dormant content, and the validator warns about them by
+name until their legs exist.
 
 **F14 · Legs 2–12** — the content pour. Each leg written, tier-tagged, and signed off by the
 reviewer per leg, not per project. Legs 9 and 10 (Dophkah, Alush) are the proof of concept:

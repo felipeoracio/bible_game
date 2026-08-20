@@ -23,13 +23,14 @@ describe("the shipped content", () => {
   });
 
   /**
-   * Three set pieces are authored and not yet reachable, because the legs that
-   * reach them (5, 11 and 12) are still to be written. That is a true and useful
-   * warning, so it is allowed by name rather than silenced — any *other* warning
-   * still fails, and these three go away as F14 lands the remaining legs.
+   * Two set pieces are authored and not yet reachable, because the legs that reach
+   * them (11 and 12) are still to be written. That is a true and useful warning, so
+   * it is allowed by name rather than silenced — any *other* warning still fails,
+   * and the list shrinks as F14 lands the remaining legs. Marah came off it when
+   * leg 5 was written.
    */
   it("warns about nothing except the set pieces still waiting for their legs", () => {
-    const pending = ["setpiece:marah", "setpiece:rephidim", "setpiece:jethro"];
+    const pending = ["setpiece:rephidim", "setpiece:jethro"];
     const warnings = validateEpisode(episode1).filter((i) => i.level === "warning");
     const unexpected = warnings.filter((w) => !pending.includes(w.where));
     expect(unexpected, unexpected.map((w) => `${w.where}: ${w.message}`).join("\n")).toHaveLength(

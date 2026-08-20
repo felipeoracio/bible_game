@@ -43,8 +43,12 @@ export default function MannaPanel() {
     <section className="frame frame-panel flex flex-col gap-3" aria-label="The morning's manna">
       <div className="text-pixel-sm flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 uppercase tracking-widest">
         <h3 className="text-ochre">Manna &middot; day {week} of seven</h3>
+        {/*
+          A fraction only makes sense while the household is short. On the sixth day
+          it holds twice what it needs, and "10 of 5 omers" reads like a shortfall.
+        */}
         <span className={short ? "text-terracotta" : "text-linen/50"}>
-          {held} of {need} omers
+          {short ? `${held} of ${need} omers` : `${held} omers in hand`}
         </span>
       </div>
 

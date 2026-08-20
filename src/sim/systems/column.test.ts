@@ -1,12 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
   advanceLag,
+  campCloses,
   COLUMN_SPEED_KMH,
   drag,
   effectiveSpeed,
   isStraggling,
   lagOver,
   positionAt,
+  restShare,
   STRAGGLER_KM,
 } from "./column";
 import { freshMember, type MemberState } from "./household";
@@ -105,5 +107,49 @@ describe("position in the column", () => {
   it("marks the stragglers only at the very back", () => {
     expect(isStraggling(STRAGGLER_KM - 0.1)).toBe(false);
     expect(isStraggling(STRAGGLER_KM + 10)).toBe(true);
+  });
+});
+
+/**
+ * Numbers 33 is a list of camps: the column stops at the same place every night.
+ * Without this, lag compounded without limit and a worn household could finish one
+ * long leg forty kilometres adrift of a nation that had been standing still since
+ * dusk. Found by walking the whole itinerary, not by reading the code.
+ */
+describe("a night in camp", () => {
+  it("closes most of the gap, because the column is not going anywhere", () => {
+    expect(campCloses(40)).toBeLessThan(12);
+    expect(campCloses(8)).toBeLessThan(3);
+  });
+
+  it("leaves a persistently slow household still nearer the back", () => {
+    expect(campCloses(40)).toBeGreaterThan(0);
+  });
+
+  it("does nothing for a household that was never behind", () => {
+    expect(campCloses(0)).toBe(0);
+  });
+
+  it("stops lag running away over leg after leg", () => {
+    // Twelve legs, each adding a punishing amount, with a camp at the end of each.
+    let lag = 0;
+    for (let leg = 0; leg < 12; leg++) lag = campCloses(lag + 40);
+    expect(lag).toBeLessThan(STRAGGLER_KM * 2);
+  });
+});
+
+describe("what arriving late costs", () => {
+  it("costs nothing at all when the household walked in with everyone else", () => {
+    expect(restShare(0)).toBe(1);
+  });
+
+  it("costs a share of the night the further behind they were", () => {
+    expect(restShare(4)).toBeLessThan(1);
+    expect(restShare(8)).toBeLessThan(restShare(4));
+  });
+
+  /** The loop has to be escapable: a bad night is never a lost night. */
+  it("never takes the whole night away, however far behind they were", () => {
+    expect(restShare(100)).toBeGreaterThan(0.4);
   });
 });

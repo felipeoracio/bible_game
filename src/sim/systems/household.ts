@@ -127,11 +127,14 @@ export function walk(
 }
 
 /** A night in camp. Rest restores the body first, and the spirit more slowly. */
-export function rest(member: MemberState): MemberState {
+export function rest(member: MemberState, share = 1): MemberState {
+  // `share` is how much of the night the household actually got — a family that
+  // walked into camp long after everyone else does not get a whole one.
+  const got = Math.min(1, Math.max(0, share));
   return {
     ...member,
-    condition: clamp(member.condition + 34),
-    morale: clamp(member.morale + 14),
+    condition: clamp(member.condition + 34 * got),
+    morale: clamp(member.morale + 14 * got),
   };
 }
 
@@ -147,8 +150,8 @@ export function walkAll(
   return next.some((member, i) => member !== household[i]) ? next : household;
 }
 
-export function restAll(household: MemberState[]): MemberState[] {
-  return household.map(rest);
+export function restAll(household: MemberState[], share = 1): MemberState[] {
+  return household.map((member) => rest(member, share));
 }
 
 /** Average morale across the household, for the HUD and for endings. */

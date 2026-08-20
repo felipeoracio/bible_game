@@ -109,6 +109,37 @@ export const POSITION_NOTE: Record<ColumnPosition, string> = {
   stragglers: "You are at the very back, with the feeble and the worn out.",
 };
 
+/**
+ * How much of the gap a night in camp closes.
+ *
+ * Numbers 33 is a list of *camps*: the whole column stops at the same place every
+ * night, so a household walking in two hours after everybody else still walks in.
+ * Without this, lag compounded without limit — a worn household could finish a
+ * single long leg forty kilometres adrift of a nation that had been standing still
+ * since dusk, which is not a thing that can happen.
+ *
+ * A quarter is kept rather than none, so a persistently slow household is still
+ * visibly nearer the back week after week. The real cost of arriving late is not
+ * distance; it is the rest, below.
+ */
+export function campCloses(lagKm: number): number {
+  return Math.max(0, lagKm * 0.25);
+}
+
+/**
+ * How much of a night's rest a household actually gets, 0 to 1.
+ *
+ * Arriving after everyone else means less of the night in your own blankets, and
+ * the column leaves at dawn either way. This is what makes falling behind cost
+ * something once the distance itself is forgiven — and it is the loop the player
+ * has to break: behind means less rest, less rest means slower, slower means
+ * further behind. Pushing the pace is the way out, and it has its own price.
+ */
+export function restShare(lagKm: number): number {
+  if (lagKm <= 0.5) return 1;
+  return Math.max(0.45, 1 - (lagKm / STRAGGLER_KM) * 0.55);
+}
+
 /** True once the household is in the band the text warns about. */
 export function isStraggling(lagKm: number): boolean {
   return positionAt(lagKm) === "stragglers";

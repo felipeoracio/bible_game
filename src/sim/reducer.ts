@@ -4,7 +4,7 @@ import { nextEvent } from "./systems/events";
 import { recordAnswer } from "./systems/quiz";
 import { drink, refill, thirstPenalty, widenCapacity } from "./systems/water";
 import { dawn, eat, freshManna, gather, layAside } from "./systems/manna";
-import { advanceLag } from "./systems/column";
+import { advanceLag, campCloses, restShare } from "./systems/column";
 import { settleAll } from "./systems/fracture";
 import {
   advance as advanceSetPiece,
@@ -110,11 +110,20 @@ export function reduce(state: GameState, action: Action): GameState {
        */
       const justArrived = !isLegComplete(state) && isLegComplete(moved);
       if (justArrived) {
-        const { waypoint, unlocks, quizId } = moved.schedule;
+        const { waypoint, unlocks, quizId, beginsManna } = moved.schedule;
+        /*
+         * Exodus 16:1 — the congregation comes to the wilderness of Sin, and the
+         * bread begins falling the following morning. Starting the clock on arrival
+         * means the first camp there is a manna morning, which is when the player
+         * meets the basket for the first time.
+         */
+        const startingManna = beginsManna === true && moved.mannaDay <= 0;
         return {
           ...moved,
           arrivedAt: waypoint,
           quizPending: quizId,
+          mannaDay: startingManna ? 1 : moved.mannaDay,
+          manna: startingManna ? freshManna() : moved.manna,
           unlockedCodex: unlock(moved.unlockedCodex, [
             ...(waypoint ? [waypoint] : []),
             ...unlocks,
@@ -126,7 +135,15 @@ export function reduce(state: GameState, action: Action): GameState {
     }
 
     case "MAKE_CAMP": {
-      const rested = restAll(state.household);
+      /*
+       * The column camps. Numbers 33 is a list of the places it stopped, so a
+       * household walking in late still walks in, and most of the gap closes
+       * overnight. What it costs is the night itself — arriving behind everyone
+       * means less of it, and the column leaves at dawn regardless.
+       */
+      const share = restShare(state.lagKm);
+      const lagKm = campCloses(state.lagKm);
+      const rested = restAll(state.household, share);
 
       // Manna is not running yet: camp is exactly what it was before F10.
       if (state.mannaDay <= 0) {
@@ -135,6 +152,7 @@ export function reduce(state: GameState, action: Action): GameState {
           day: state.day + 1,
           nightsCamped: state.nightsCamped + 1,
           kmSinceRest: 0,
+          lagKm,
           household: rested,
         };
       }
@@ -156,6 +174,7 @@ export function reduce(state: GameState, action: Action): GameState {
         mannaDay: state.mannaDay + 1,
         nightsCamped: state.nightsCamped + 1,
         kmSinceRest: 0,
+        lagKm,
         household: meal.household,
         manna: morning.manna,
         mannaSpoiled: morning.spoiled > 0 ? morning.spoiled : undefined,

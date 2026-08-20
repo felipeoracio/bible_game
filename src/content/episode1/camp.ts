@@ -1,4 +1,4 @@
-import { invented, reasoned, ref, type CampLine, type GameEvent } from "../types";
+import { invented, reasoned, recorded, ref, type CampLine, type GameEvent } from "../types";
 
 /**
  * The evening beat.
@@ -271,6 +271,95 @@ export const legs0204CampEvents: GameEvent[] = [
         outcome:
           "You say it straight out — that you do not know what happens tomorrow and that you are frightened too. Nobody thanks you. Nobody has to ask you again either.",
         effects: { morale: -4, trust: 9 },
+      },
+    ],
+  },
+];
+
+/**
+ * Camp decisions for legs 5 to 8.
+ *
+ * The evening at Marah is deliberately the emptiest of these — the household has
+ * just been through the set piece and there is nothing left to decide except who
+ * gets looked after. The evening in the wilderness of Sin is the opposite: it is
+ * the first manna morning, and the camp screen has a basket on it from here on.
+ */
+export const legs0508CampEvents: GameEvent[] = [
+  {
+    id: "camp-after-the-sweet-water",
+    title: "The night after Marah",
+    body: "Everyone has drunk and nobody is talking much. {naamah} is asleep sitting up. There is a taste of something in the water still, not bitterness exactly, and nobody mentions it.",
+    provenance: reasoned(
+      "The water at Marah being made sweet is recorded; the evening after it inside one household is invented.",
+      ref("exodus", 15, "25"),
+    ),
+    choices: [
+      {
+        id: "let-her-sleep",
+        label: "Leave {naamah} where she is",
+        provenance: invented(),
+        outcome:
+          "You put something under her head and leave her sitting up by the fire, because moving her would wake her and she has earned the sleep more than she has earned a better position.",
+        effects: { morale: 4, trust: 4 },
+      },
+      {
+        id: "wake-her-to-drink",
+        label: "Wake her and make her drink more",
+        provenance: invented(),
+        outcome:
+          "She is furious about it for as long as it takes to drink, and considerably better in the morning than the people who were left alone.",
+        effects: { condition: 9, trust: -3 },
+      },
+    ],
+  },
+  {
+    id: "camp-under-the-palms",
+    title: "Elim, and nobody wants to leave",
+    body: "Second night under the palms. The column is meant to move tomorrow and the camp has quietly decided it is not certain about that. {elon} asks, reasonably, why anyone would leave somewhere with water to go somewhere without it.",
+    provenance: reasoned(
+      "Elim's twelve springs and seventy palms are recorded, and the column does move on; the reluctance to leave is invented.",
+      ref("exodus", 15, "27"),
+    ),
+    choices: [
+      {
+        id: "answer-him-straight",
+        label: "Tell him this was never where you were going",
+        provenance: invented(),
+        outcome:
+          "He does not like the answer. He does understand it, which is different, and he is packed before you are in the morning.",
+        effects: { trust: 6, morale: -3 },
+      },
+      {
+        id: "let-it-lie",
+        label: "Tell him to enjoy the water while it is here",
+        provenance: invented(),
+        outcome:
+          "It is good advice for tonight and it is not an answer, and the pair of you both know which of those it was.",
+        effects: { morale: 5, trust: -2 },
+      },
+    ],
+  },
+  {
+    id: "camp-first-manna-night",
+    title: "The evening before the bread",
+    body: "The wilderness of Sin, a month out of Egypt, and the food is gone. Word has come round that something will fall in the morning and that everyone is to go out and gather a day's worth of it. Nobody in this camp has ever heard of such a thing and everybody intends to be up early.",
+    provenance: recorded(ref("exodus", 16, "1"), ref("exodus", 16, "4")),
+    choices: [
+      {
+        id: "set-them-to-wake-early",
+        label: "Tell your household you are all going out at first light",
+        provenance: invented(),
+        outcome:
+          "You say it twice, and you say what a day's portion means, and you can see at least one of them deciding privately to gather more than that.",
+        effects: { trust: 5 },
+      },
+      {
+        id: "believe-it-when-you-see-it",
+        label: "Say you will believe it when you see it",
+        provenance: invented(),
+        outcome:
+          "It is an honest position and it gets a laugh, and it will look considerably less clever from about halfway through tomorrow morning.",
+        effects: { morale: 4, trust: -4 },
       },
     ],
   },

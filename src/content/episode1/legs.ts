@@ -105,4 +105,97 @@ export const legs: Leg[] = [
     waypoint: "the-far-shore",
     quiz: "quiz-leg-04",
   },
+  {
+    id: "leg-05-marah",
+    index: 5,
+    from: "the far shore",
+    to: "Marah",
+    distanceKm: 54,
+    distance: reasoned(
+      "Exodus 15:22 records three days' journey in the wilderness of Shur before Marah — one of only two time measures the whole route gives. Fifty-four kilometres is three short days for a column already short of water; the figure is ours, the three days are not.",
+      ref("exodus", 15, "22"),
+      ref("numbers", 33, "8"),
+    ),
+    terrain: "open-desert",
+    scripted: [
+      { eventId: "the-song-at-the-sea", atProgress: 0.02 },
+      { eventId: "the-first-dry-day", atProgress: 0.3 },
+      { eventId: "the-second-dry-day", atProgress: 0.6 },
+    ],
+    // Three dry days, and then the pool. The relief F9 was built for.
+    setPiece: { setPieceId: "marah", atProgress: 0.9 },
+    pool: ["the-taste-of-salt", "hotep-on-the-far-side"],
+    camp: ["camp-after-the-sweet-water"],
+    waypoint: "marah-note",
+    unlocks: ["the-song-of-the-sea", "how-long-a-day"],
+    quiz: "quiz-leg-05",
+  },
+  {
+    id: "leg-06-elim",
+    index: 6,
+    from: "Marah",
+    to: "Elim",
+    distanceKm: 18,
+    distance: reasoned(
+      "Numbers 33:9 records the stage from Marah to Elim with no distance. Eighteen kilometres is a short stage for a column that has just been watered and is walking toward more of it.",
+      ref("numbers", 33, "9"),
+    ),
+    terrain: "rocky-wadi",
+    scripted: [
+      { eventId: "word-from-the-pool", atProgress: 0.1 },
+      { eventId: "twelve-springs-and-seventy-palms", atProgress: 0.85 },
+    ],
+    pool: ["the-sandal-that-will-not-last"],
+    camp: ["camp-under-the-palms"],
+    waypoint: "elim",
+    unlocks: ["the-statute-at-marah"],
+    quiz: "quiz-leg-06",
+  },
+  {
+    id: "leg-07-red-sea",
+    index: 7,
+    from: "Elim",
+    to: "the Red Sea",
+    distanceKm: 24,
+    distance: reasoned(
+      "Numbers 33:10 is a single line — they travelled from Elim and camped by the Red Sea — with no distance and no events. Twenty-four kilometres is an ordinary day for a rested column.",
+      ref("numbers", 33, "10"),
+    ),
+    terrain: "coastal-sand",
+    scripted: [
+      { eventId: "the-quiet-leg", atProgress: 0.35 },
+      { eventId: "counting-the-days", atProgress: 0.75 },
+    ],
+    pool: ["a-child-asks-where-you-are-going"],
+    camp: ["camp-under-the-palms"],
+    waypoint: "the-red-sea-camp",
+    quiz: "quiz-leg-07",
+  },
+  {
+    id: "leg-08-wilderness-of-sin",
+    index: 8,
+    from: "the Red Sea",
+    to: "the wilderness of Sin",
+    distanceKm: 30,
+    distance: reasoned(
+      "Numbers 33:11 records the stage without a distance, and Exodus 16:1 dates the arrival to a month out of Egypt. Thirty kilometres fits the running total against that date; the date is recorded and the distance is ours.",
+      ref("numbers", 33, "11"),
+      ref("exodus", 16, "1"),
+    ),
+    terrain: "open-desert",
+    scripted: [
+      { eventId: "the-flesh-pots-of-egypt", atProgress: 0.45 },
+      { eventId: "bread-from-the-sky", atProgress: 0.8 },
+    ],
+    /*
+     * Exodus 16:1. The clock starts on arrival, so the first camp here is a manna
+     * morning and the basket is on the camp screen from this leg onward.
+     */
+    beginsManna: true,
+    pool: ["a-child-asks-where-you-are-going", "the-sandal-that-will-not-last"],
+    camp: ["camp-first-manna-night"],
+    waypoint: "wilderness-of-sin",
+    unlocks: ["the-murmuring", "a-days-portion"],
+    quiz: "quiz-leg-08",
+  },
 ];

@@ -106,6 +106,12 @@ export interface Leg {
    * 33:8's single stage is split across legs 4 and 5 here.
    */
   setPiece?: { setPieceId: string; atProgress: number };
+  /**
+   * True for the leg where manna begins (Exodus 16:1). Set on exactly one leg —
+   * the wilderness of Sin — and never reachable from a button, for the same reason
+   * water refills are not: the supply is not the player's to start.
+   */
+  beginsManna?: boolean;
   /** Ordinary-life events eligible to fire on this leg. */
   pool: string[];
   /** Decisions the household can face at camp on this leg. */

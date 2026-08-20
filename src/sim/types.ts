@@ -196,6 +196,7 @@ export interface LegInput {
   terrain: Terrain;
   scripted?: LegSchedule["scripted"];
   setPiece?: LegSchedule["setPiece"];
+  beginsManna?: boolean;
   pool?: LegSchedule["pool"];
   waypoint?: string;
   unlocks?: string[];
@@ -227,6 +228,7 @@ export function initialState(
     schedule: {
       scripted: leg.scripted ?? emptySchedule.scripted,
       setPiece: leg.setPiece,
+      beginsManna: leg.beginsManna,
       pool: leg.pool ?? emptySchedule.pool,
       waypoint: leg.waypoint,
       unlocks: leg.unlocks ?? [],
