@@ -632,6 +632,51 @@ Two rules, both enforced by the content validator:
    says so. Interpretive choices forced by the art get stated in the credits.
 5. **If a mechanic requires the story to bend, the mechanic changes.**
 
+## Household condition model — built to spec, **not yet wired in**
+
+`src/sim/condition/` implements the four-meter model from the household condition
+specification: `water`, `body`, `spirit`, `trust`, each failing in a different way —
+*carried*, *left behind*, *spreads*, *disobeys*. Pure, framework-free, 42 tests including
+all twelve acceptance cases.
+
+**It is a standalone module. The shipped game does not use it.** The live systems
+(`systems/household.ts`, `water.ts`, `manna.ts`, `fracture.ts`) still drive all twelve legs.
+The spec said to build the model the travel loop will call into and not to build the travel
+loop, so that is what this is. Integration is a separate and larger job — see the conflicts
+below.
+
+What the module adds over the shipped systems: carry slots with a real cost (one slot per
+adult, and picking up a collapsed person means abandoning a load, explicitly, never
+automatically), scarring (every zero permanently drops that meter's ceiling by 10, floor 40,
+so nothing ever fully heals), persistent conditions that cap `body.max` until treated across
+N nights, spirit contagion, and a two-leg departure clock with a three-leg road back.
+
+**Trust isolation is enforced by the type system, not by discipline.** `EnvDelta` is keyed
+on `Exclude<MeterName, "trust">`, so no environmental caller can express a trust mutation —
+weather, terrain, pace, heat and time have no signature that carries one. `applyTrust` is a
+separate function called only from `resolveDecision`, which makes its caller list a complete
+audit.
+
+**Death is unreachable by arithmetic.** One entry point, `authoredDeath`, called from
+scripted content. A 10,000-run randomised fuzz across every pace, heat band and duration
+asserts zero deaths — and separately asserts the fuzz actually reached `collapsed` and
+`straggling`, so the assertion means something.
+
+### Two conflicts to resolve before integrating
+
+1. **This reverses the murmuring fix from the Scripture review turn.** F14 added trust drain
+   from thirst and hunger, citing Exodus 16:2 and 17:3, because fracture was otherwise
+   unreachable — trust bottomed out at 46 against a threshold of 8. The spec forbids exactly
+   that. Its answer is better: deprivation routes to **spirit**, which has its own zero-state
+   with contagion, and murmuring in the text is against *Moses* while trust here is
+   confidence in *the player as head of household*. Integrating means backing out that change
+   and re-checking that the bad ending is still reachable through spirit.
+2. **Meter names differ.** The shipped model uses `condition`/`morale`; the spec uses
+   `body`/`spirit`. Same four axes. A rename touches every content file's `effects`.
+
+Integration would also change the game's feel substantially — carry slots and scarring are
+new pressures on twelve legs balanced without them, so it needs a rebalancing pass.
+
 ## Still open
 
 - **Scripture reviewer — packet built and a self-audit done; a qualified human has still
