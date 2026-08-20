@@ -18,7 +18,7 @@ import {
 } from "./systems/setpiece";
 import { exposure, harm } from "./systems/rephidim";
 import { assign as assignJudge } from "./systems/jethro";
-import type { Action, GameState } from "./types";
+import { initialState, type Action, type GameState } from "./types";
 
 /**
  * The whole game, eventually. Pure: same state and action always produce the same
@@ -70,6 +70,17 @@ export function reduce(state: GameState, action: Action): GameState {
         water: drunk.water,
         household: settleAll(walkAll(drunk.household, walked, state.pace, thirstCost)),
       };
+
+      /*
+       * The set piece outranks everything. If the household has just reached the
+       * sea, that is what is happening to them — not a sandal strap, and not a
+       * scripted conversation. It fires once and the march is stopped until it is
+       * finished; `moved.setPiece` being already set is what makes that once.
+       */
+      const due = moved.schedule.setPiece;
+      if (due && moved.setPiece === undefined && legProgress(moved) >= due.atProgress) {
+        return { ...moved, setPiece: beginSetPiece(due.setPieceId) };
+      }
 
       const triggered = nextEvent({
         schedule: moved.schedule,
@@ -250,6 +261,40 @@ export function reduce(state: GameState, action: Action): GameState {
         seed,
         setPiece: finishSetPiece(state.setPiece),
         unlockedCodex: unlock(state.unlockedCodex, [...(action.piece.unlocks ?? [])]),
+      };
+    }
+
+    /**
+     * Set out on the next stage.
+     *
+     * The whole feature is in what this does *not* reset. A leg is a fresh road,
+     * not a fresh start: the household walks onto it in exactly the condition it
+     * walked off the last one, still carrying the same water, still as far behind
+     * the column as it had fallen, still estranged from whoever had stopped
+     * following. That accumulation is the game — the reason pushing hard on leg 3
+     * is felt at Rephidim on leg 11.
+     *
+     * `fired` is kept for the same reason: an event that has happened to this
+     * household has happened, and should not happen again later in the run.
+     */
+    case "BEGIN_LEG": {
+      const { leg } = action;
+      if (leg.id === state.legId) return state;
+      const blank = initialState(leg, []);
+      return {
+        ...state,
+        legId: leg.id,
+        legDistanceKm: leg.distanceKm,
+        terrain: leg.terrain,
+        distanceKm: 0,
+        kmSinceRest: 0,
+        schedule: blank.schedule,
+        nextPooledAtKm: state.distanceKm + blank.nextPooledAtKm,
+        // Cleared because they belong to the leg just finished, not the next one.
+        arrivedAt: undefined,
+        quizPending: undefined,
+        activeEventId: undefined,
+        setPiece: undefined,
       };
     }
 

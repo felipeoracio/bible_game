@@ -100,6 +100,12 @@ export interface Leg {
    */
   backdrop?: string;
   scripted: ScriptedSlot[];
+  /**
+   * The set piece this leg is built around, and where along it the march stops for
+   * good. At most one: a leg cannot hold two of the four, which is why Numbers
+   * 33:8's single stage is split across legs 4 and 5 here.
+   */
+  setPiece?: { setPieceId: string; atProgress: number };
   /** Ordinary-life events eligible to fire on this leg. */
   pool: string[];
   /** Decisions the household can face at camp on this leg. */

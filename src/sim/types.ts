@@ -176,24 +176,35 @@ export type Action =
    * Read the recorded outcome and apply it. Carries the judges the content has so
    * Jethro can place the household without `src/sim` importing an episode.
    */
-  | { type: "FINISH_SET_PIECE"; piece: RunnableSetPiece; judgeIds?: readonly string[] };
+  | { type: "FINISH_SET_PIECE"; piece: RunnableSetPiece; judgeIds?: readonly string[] }
+  /**
+   * Set out on the next stage of the itinerary.
+   *
+   * Takes the same flattened leg the run started with, so the caller is the one
+   * place that knows about episodes and `src/sim` still does not.
+   */
+  | { type: "BEGIN_LEG"; leg: LegInput };
 
 /**
  * Takes only the shape it needs from a content `Leg`, so the simulation stays
  * independent of the content model while still being driven by it.
  */
+/** What the simulation needs to know about a leg. Flattened from the content. */
+export interface LegInput {
+  id: string;
+  distanceKm: number;
+  terrain: Terrain;
+  scripted?: LegSchedule["scripted"];
+  setPiece?: LegSchedule["setPiece"];
+  pool?: LegSchedule["pool"];
+  waypoint?: string;
+  unlocks?: string[];
+  eventUnlocks?: Record<string, string[]>;
+  quiz?: string;
+}
+
 export function initialState(
-  leg: {
-    id: string;
-    distanceKm: number;
-    terrain: Terrain;
-    scripted?: LegSchedule["scripted"];
-    pool?: LegSchedule["pool"];
-    waypoint?: string;
-    unlocks?: string[];
-    eventUnlocks?: Record<string, string[]>;
-    quiz?: string;
-  },
+  leg: LegInput,
   household: CastMember[],
   /** Fixed by default so a fresh run is reproducible; vary it per save later. */
   seed = 0x5eed,
@@ -215,6 +226,7 @@ export function initialState(
     nightsCamped: 0,
     schedule: {
       scripted: leg.scripted ?? emptySchedule.scripted,
+      setPiece: leg.setPiece,
       pool: leg.pool ?? emptySchedule.pool,
       waypoint: leg.waypoint,
       unlocks: leg.unlocks ?? [],

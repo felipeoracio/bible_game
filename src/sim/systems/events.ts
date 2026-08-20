@@ -21,6 +21,8 @@ import { createRng } from "../rng";
  */
 export interface LegSchedule {
   scripted: { eventId: string; atProgress: number }[];
+  /** The set piece this leg reaches, if it has one. */
+  setPiece?: { setPieceId: string; atProgress: number };
   pool: string[];
   /** Codex entry opened by reaching the end of the leg. */
   waypoint?: string;

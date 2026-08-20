@@ -6,6 +6,7 @@ import { PACES, type Pace } from "@/sim/types";
 import { daysOfWaterLeft } from "@/sim/systems/water";
 import { POSITION_LABEL, POSITION_NOTE, positionAt } from "@/sim/systems/column";
 import { useGame } from "@/state/store";
+import { useState } from "react";
 
 const PACE_LABEL: Record<Pace, string> = {
   steady: "Steady",
@@ -30,9 +31,16 @@ export default function Hud({ onMakeCamp }: { onMakeCamp: () => void }) {
   const household = useGame((s) => s.state.household);
   const terrain = useGame((s) => s.state.terrain);
   const lagKm = useGame((s) => s.state.lagKm);
+  const nightsCamped = useGame((s) => s.state.nightsCamped);
   const dispatch = useGame((s) => s.dispatch);
+  const nextLeg = useGame((s) => s.nextLeg);
 
-  const leg = episode1.legs.find((candidate) => candidate.id === legId);
+  /** Set once the itinerary runs out, which for Episode 1 means Sinai. */
+  const [atSinai, setAtSinai] = useState(false);
+
+  const legAt = episode1.legs.findIndex((candidate) => candidate.id === legId);
+  const leg = legAt >= 0 ? episode1.legs[legAt] : undefined;
+  const nextTo = legAt >= 0 ? episode1.legs[legAt + 1]?.to : undefined;
 
   /*
    * Water is shown as days of walking rather than litres, because litres mean
@@ -45,6 +53,12 @@ export default function Hud({ onMakeCamp }: { onMakeCamp: () => void }) {
   const position = positionAt(lagKm);
   const progress = legProgress({ distanceKm, legDistanceKm });
   const arrived = progress >= 1;
+  /*
+   * Nights spent at *this* camp. `nightsCamped` counts the whole run, so it is
+   * compared against the number of legs already behind the household — arriving
+   * and sleeping is what earns the road onward.
+   */
+  const nightsHere = nightsCamped - legAt;
 
   return (
     <div className="frame frame-panel flex flex-col gap-4">
@@ -132,6 +146,23 @@ export default function Hud({ onMakeCamp }: { onMakeCamp: () => void }) {
           Making camp is the only way the household recovers, so it is put beside
           the pace controls rather than hidden — stopping is a pace decision too.
         */}
+        {/*
+          Only offered once the household has actually reached the camp and slept
+          there. Setting out is the deliberate end of a stage, so it sits beside
+          "make camp" rather than firing on its own.
+        */}
+        {arrived && nightsHere > 0 && (
+          <button
+            type="button"
+            onClick={() => {
+              if (!nextLeg()) setAtSinai(true);
+            }}
+            className="text-pixel-sm border-2 border-terracotta bg-terracotta px-3 py-1.5 uppercase tracking-widest text-linen transition-opacity hover:opacity-90"
+          >
+            {nextTo ? `Set out for ${nextTo}` : "Set out"}
+          </button>
+        )}
+
         <button
           type="button"
           onClick={onMakeCamp}
@@ -143,10 +174,25 @@ export default function Hud({ onMakeCamp }: { onMakeCamp: () => void }) {
         </button>
       </div>
 
+      {/*
+        The end of the itinerary. Episode 1 stops at Sinai, and the remaining legs
+        arrive with the rest of F14 — said plainly rather than leaving a button
+        that quietly does nothing.
+      */}
+      {atSinai && (
+        <p className="text-pixel-sm text-ochre" role="status">
+          This is as far as the itinerary goes for now. The road on from here is
+          still being written.
+        </p>
+      )}
+
       <p className="text-pixel-sm text-linen/60">
         {arrived ? (
           <span className="text-linen">
-            You have reached {leg?.to ?? "the camp"}. Make camp for the night.
+            You have reached {leg?.to ?? "the camp"}.{" "}
+            {nightsHere > 0
+              ? "Set out when your household is ready."
+              : "Make camp for the night."}
           </span>
         ) : (
           <>Hold the right arrow, D, space, or press and hold the screen to march.</>

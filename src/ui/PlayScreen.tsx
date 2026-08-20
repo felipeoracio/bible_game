@@ -24,7 +24,9 @@ import { useGame } from "@/state/store";
 export default function PlayScreen() {
   const [camping, setCamping] = useState(false);
   const rehydrate = useGame((s) => s.rehydrate);
-  const leg = episode1.legs[0];
+  // The leg actually being walked, not the first one — there are several now.
+  const legId = useGame((s) => s.state.legId);
+  const leg = episode1.legs.find((candidate) => candidate.id === legId);
 
   /*
    * Pick the run back up after a refresh. The store lives in memory, so without

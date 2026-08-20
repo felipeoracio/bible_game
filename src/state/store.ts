@@ -66,6 +66,11 @@ interface GameStore {
   reset: () => void;
   /** Begin a run in a fresh slot. Called when the player finishes creating a household. */
   beginRun: () => void;
+  /**
+   * Set out on the next stage of the itinerary. Returns false at the end of the
+   * episode, when there is no next leg to take.
+   */
+  nextLeg: () => boolean;
   /** Put a saved run back into play. Returns false if it no longer fits the content. */
   loadRun: (run: SavedRun) => boolean;
   /**
@@ -127,6 +132,15 @@ export const useGame = create<GameStore>((set, get) => {
     beginRun: () => {
       set({ runId: newRunId() });
       write();
+    },
+
+    nextLeg: () => {
+      const { legId } = get().state;
+      const at = episode1.legs.findIndex((leg) => leg.id === legId);
+      const next = at >= 0 ? episode1.legs[at + 1] : undefined;
+      if (!next) return false;
+      get().dispatch({ type: "BEGIN_LEG", leg: legInput(next) });
+      return true;
     },
 
     loadRun: (run) => {

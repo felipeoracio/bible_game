@@ -168,3 +168,110 @@ export const leg01CampEvents: GameEvent[] = [
     ],
   },
 ];
+
+/**
+ * Camp decisions for legs 2 to 4.
+ *
+ * One per leg, and each one is about something the leg has just done to the
+ * household rather than a generic evening. The camp before the sea is the hardest
+ * of the three, and it deliberately offers no good option.
+ */
+export const legs0204CampEvents: GameEvent[] = [
+  {
+    id: "camp-edge-of-the-wilderness",
+    title: "The edge of it",
+    body: "Etham. You can see where the green gives out — it is not a gradual thing, it is a line, and the camp is pitched on the last of the good side of it. {naamah} has been looking at that line since you arrived and has not said anything about it.",
+    provenance: reasoned(
+      "Exodus 13:20 and Numbers 33:6 both place Etham at the edge of the wilderness; what a household did on that last evening is invented.",
+      ref("exodus", 13, "20"),
+    ),
+    choices: [
+      {
+        id: "sit-with-naamah",
+        label: "Go and sit with {naamah}",
+        provenance: invented(),
+        outcome:
+          "She tells you she was born in Egypt and has never in her life been further from a river than she is tonight. Then she tells you she is glad, and you cannot tell whether she means it.",
+        effects: { morale: 5, trust: 5 },
+      },
+      {
+        id: "check-the-loads",
+        label: "Go through everything you are carrying, one more time",
+        provenance: invented(),
+        outcome:
+          "You repack the whole household by firelight and throw out two things you will miss. Everything left is something you can justify carrying into that.",
+        effects: { condition: -4, morale: 3 },
+      },
+      {
+        id: "sleep-early",
+        label: "Get everyone down early",
+        provenance: invented(),
+        outcome:
+          "You put the fire out before anyone is ready and make them lie down. They grumble. They are also the only family near you that wakes up rested.",
+        effects: { condition: 8, morale: -3 },
+      },
+    ],
+  },
+  {
+    id: "camp-in-front-of-migdol",
+    title: "Camped where you can be seen",
+    body: "The fires are lit in a long line along the shore because that is where the order put them, in the open, in front of the water, with the fort up on the shoulder of the hill behind. Anyone standing at Migdol tonight can count you.",
+    provenance: reasoned(
+      "Exodus 14:2 places the camp before Pi-hahiroth between Migdol and the sea; how it felt to camp visibly in the open is invented.",
+      ref("exodus", 14, "2"),
+    ),
+    choices: [
+      {
+        id: "small-fire",
+        label: "Keep your fire small",
+        provenance: invented(),
+        outcome:
+          "You bank it down until it is barely worth having. It does nothing for anybody's safety and a great deal for your own peace of mind, which you decide is a fair trade.",
+        effects: { condition: -3, morale: 3 },
+      },
+      {
+        id: "big-fire",
+        label: "Build it up and let them see it",
+        provenance: invented(),
+        outcome:
+          "You put everything burnable on it. {elon} asks whether that is wise and you tell him you are done creeping about, and he sits a little straighter for the rest of the evening.",
+        effects: { morale: 6, trust: 4, condition: -2 },
+      },
+    ],
+  },
+  {
+    id: "camp-the-night-of-the-wind",
+    title: "The last night on this side",
+    body: "The wind has been up for an hour and it is not dropping. There is an army camped behind a cloud at one end of the shore and a sea at the other, and your household is looking at you as though you have somewhere to put them.",
+    provenance: reasoned(
+      "The east wind blowing all night is recorded; a household's last evening on the Egyptian shore is invented around it.",
+      ref("exodus", 14, "21"),
+    ),
+    choices: [
+      {
+        id: "tell-them-a-story",
+        label: "Tell them about Joseph",
+        provenance: invented(),
+        outcome:
+          "You tell the whole thing badly, over the wind, and get half of it wrong. {milcah} falls asleep before the good part. {tirzah} does not, and looks at you differently afterwards.",
+        effects: { morale: 7, trust: 4 },
+      },
+      {
+        id: "keep-watch",
+        label: "Stay awake and watch the shore",
+        provenance: invented(),
+        outcome:
+          "You sit up the whole night with your back to your sleeping family and your eyes on the dark. Nothing comes. You are ruined in the morning.",
+        effects: { condition: -12, trust: 7 },
+      },
+      {
+        id: "say-nothing",
+        label: "Admit you have nothing to tell them",
+        provenance: invented(),
+        outcome:
+          "You say it straight out — that you do not know what happens tomorrow and that you are frightened too. Nobody thanks you. Nobody has to ask you again either.",
+        effects: { morale: -4, trust: 9 },
+      },
+    ],
+  },
+];

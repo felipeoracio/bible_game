@@ -726,3 +726,105 @@ describe("set pieces, through the reducer", () => {
     });
   });
 });
+
+describe("setting out on the next leg", () => {
+  const nextLeg = { id: "leg-next", distanceKm: 15, terrain: "rocky-wadi" as const };
+
+  /** A worn, thirsty, straggling household that has just finished a leg. */
+  const finished = (): GameState => {
+    let s = reduce(start(), { type: "SET_PACE", pace: "driving" });
+    s = reduce(s, { type: "TRAVEL", km: 20 });
+    return { ...s, lagKm: 4, arrivedAt: "somewhere", quizPending: "a-quiz" };
+  };
+
+  it("puts the household on the new road at the start of it", () => {
+    const s = reduce(finished(), { type: "BEGIN_LEG", leg: nextLeg });
+    expect(s.legId).toBe("leg-next");
+    expect(s.legDistanceKm).toBe(15);
+    expect(s.terrain).toBe("rocky-wadi");
+    expect(s.distanceKm).toBe(0);
+    expect(s.kmSinceRest).toBe(0);
+  });
+
+  it("clears what belonged to the leg just finished", () => {
+    const s = reduce(finished(), { type: "BEGIN_LEG", leg: nextLeg });
+    expect(s.arrivedAt).toBeUndefined();
+    expect(s.quizPending).toBeUndefined();
+    expect(s.setPiece).toBeUndefined();
+  });
+
+  /**
+   * The heart of it. A leg is a fresh road, not a fresh start — everything the
+   * household is carrying, in every sense, comes with them. This is what makes
+   * pushing hard on leg 3 something you feel at Rephidim on leg 11.
+   */
+  describe("what comes with them", () => {
+    it("keeps the household exactly as worn as it was", () => {
+      const before = finished();
+      const after = reduce(before, { type: "BEGIN_LEG", leg: nextLeg });
+      expect(after.household).toEqual(before.household);
+      expect(after.household[0]!.condition).toBeLessThan(100);
+    });
+
+    it("keeps the water in the skins", () => {
+      const before = finished();
+      const after = reduce(before, { type: "BEGIN_LEG", leg: nextLeg });
+      expect(after.water).toEqual(before.water);
+      expect(after.water.litres).toBeLessThan(after.water.capacity);
+    });
+
+    it("keeps how far behind the column they had fallen", () => {
+      expect(reduce(finished(), { type: "BEGIN_LEG", leg: nextLeg }).lagKm).toBe(4);
+    });
+
+    it("keeps the day count, the Codex, and every decision taken", () => {
+      const before = { ...finished(), unlockedCodex: ["succoth"], decisions: { x: "y" } };
+      const after = reduce(before, { type: "BEGIN_LEG", leg: nextLeg });
+      expect(after.day).toBe(before.day);
+      expect(after.unlockedCodex).toEqual(["succoth"]);
+      expect(after.decisions).toEqual({ x: "y" });
+    });
+
+    it("keeps the names the player chose", () => {
+      const before = reduce(finished(), {
+        type: "NAME_HOUSEHOLD",
+        identities: { eliab: { name: "Hanniel", look: 1 } },
+        head: { age: 40, trade: "shepherd" },
+      });
+      const after = reduce(before, { type: "BEGIN_LEG", leg: nextLeg });
+      expect(after.identities.eliab).toEqual({ name: "Hanniel", look: 1 });
+    });
+
+    /** An event that has happened to this household has happened. */
+    it("does not let an event fire again on a later leg", () => {
+      const before = { ...finished(), fired: ["the-asking"] };
+      expect(reduce(before, { type: "BEGIN_LEG", leg: nextLeg }).fired).toContain("the-asking");
+    });
+  });
+
+  it("ignores an attempt to begin the leg already being walked", () => {
+    const s = start();
+    expect(reduce(s, { type: "BEGIN_LEG", leg: { ...nextLeg, id: s.legId } })).toBe(s);
+  });
+
+  it("carries a set piece onto the leg that has one", () => {
+    const withSea: GameState = reduce(finished(), {
+      type: "BEGIN_LEG",
+      leg: { ...nextLeg, setPiece: { setPieceId: "the-crossing", atProgress: 0.5 } },
+    });
+    expect(withSea.schedule.setPiece?.setPieceId).toBe("the-crossing");
+
+    // Walking past the trigger point stops the march and opens it.
+    const walked = reduce(withSea, { type: "TRAVEL", km: 12 });
+    expect(walked.setPiece?.id).toBe("the-crossing");
+    expect(reduce(walked, { type: "TRAVEL", km: 3 })).toBe(walked);
+  });
+
+  it("does not open the set piece before the household has reached it", () => {
+    const withSea = reduce(finished(), {
+      type: "BEGIN_LEG",
+      leg: { ...nextLeg, setPiece: { setPieceId: "the-crossing", atProgress: 0.9 } },
+    });
+    expect(reduce(withSea, { type: "TRAVEL", km: 2 }).setPiece).toBeUndefined();
+  });
+});

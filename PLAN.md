@@ -416,6 +416,56 @@ with the previous household's names.
 
 ### Phase C — Content and ship
 
+**F14 · The remaining eleven legs** — 🔨 in progress: **legs 2, 3 and 4 built and verified**
+The itinerary is Numbers 33:5-15, which maps cleanly onto the twelve legs and lands manna at
+Leg 8, Rephidim at 11 and Jethro at 12 exactly as the plan assumed.
+
+**Two things had to be built before any leg could be reached at all**, and neither was in the
+brief:
+
+- **`BEGIN_LEG`.** The game had never advanced a leg, because it had only ever had one. The
+  whole feature is in what it does *not* reset: the household walks onto a new road in
+  exactly the condition it walked off the last one, still carrying the same water, still as
+  far behind the column as it had fallen, still estranged from whoever stopped following.
+  That accumulation is the game — it is why pushing hard on Leg 3 is felt at Rephidim on
+  Leg 11. `fired` is kept for the same reason: an event that has happened to this household
+  has happened.
+- **`Leg.setPiece`.** A leg had no way to point at one of the four, so F12's set pieces were
+  unreachable by construction. It fires from `TRAVEL` and outranks every other event — if
+  the household has just reached the sea, that is what is happening to them.
+
+The legs themselves:
+
+| | Stage | The leg is about |
+|---|---|---|
+| **2** | Succoth → Etham | Not taking the short road (13:17-18), Joseph's bones, the pillar |
+| **3** | Etham → Pi-hahiroth | Being told to turn *back*, and finding out why at the shore |
+| **4** | Pi-hahiroth → the far shore | The wind all night, and the crossing |
+
+Leg 3 is the one worth not softening. Every option on it is a way of being wrong in good
+faith, because the camp is bait (14:3-4) and the people camped in it are not told. No amount
+of sensible reasoning gets you to the right conclusion from inside it.
+
+**Numbers 33:8 is one stage and the game makes it two.** The crossing, three days in the
+wilderness and the arrival at Marah are a single verse; legs 4 and 5 split it, because one
+leg cannot hold two set pieces. The Codex entry "The far shore" tells the player that the
+line between them is ours and not the text's.
+
+**The household arrives at the far shore nearly dry** — 23L, 14L, 6L, 1L across the four
+legs — and there is deliberately no water source on legs 2 to 4, because the text records
+none between Etham and the sea. Inventing one would break §5.3. The relief is Marah, which
+is Leg 5 and next.
+
+Validator additions: a leg's set piece must exist and fire inside 0 to 1, and a set piece no
+leg reaches now warns. Three of those warnings are live and expected (Marah, Rephidim,
+Jethro); the test allows exactly those by name so any *new* warning still fails the build.
+
+One test quietly rotted and was caught: "catches a Codex entry linking to nothing" used
+`etham` as its example of a non-existent entry, and Leg 2 made Etham real.
+
+**Still to write:** legs 5 to 12 — Marah, Elim, the Red Sea, the wilderness of Sin (manna
+begins), Dophkah, Alush, Rephidim, and Sinai.
+
 **F14 · Legs 2–12** — the content pour. Each leg written, tier-tagged, and signed off by the
 reviewer per leg, not per project. Legs 9 and 10 (Dophkah, Alush) are the proof of concept:
 named in the itinerary, no narrative recorded, and the game says so out loud.

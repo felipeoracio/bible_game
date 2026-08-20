@@ -1,0 +1,71 @@
+import { recorded, reasoned, ref, type CodexEntry } from "../../types";
+
+/** Codex entries for legs 2 to 4 — Succoth to the far shore of the sea. */
+export const legs0204Codex: CodexEntry[] = [
+  {
+    id: "etham",
+    title: "Etham",
+    kind: "waypoint",
+    note: "The second camp, and the last one with Egypt still behind you rather than around you. Both Exodus and Numbers place it at the edge of the wilderness, which is the sort of phrase that sounds poetic until you have walked to it. From here the country stops supporting people. Where Etham stood is not known.",
+    provenance: recorded(ref("exodus", 13, "20"), ref("numbers", 33, "6")),
+    passages: [ref("exodus", 13, "20"), ref("numbers", 33, "6")],
+    related: ["succoth", "how-far-was-it"],
+  },
+  {
+    id: "why-not-the-short-road",
+    title: "The road they did not take",
+    kind: "note",
+    note: "There was a quick way to Canaan and Israel did not go on it. The text is unusually forthcoming about why: God did not lead them by the way of the land of the Philistines, although that was near, because the people might change their minds when they saw war and go back to Egypt. So the long way round was not a delay or a wrong turn. It was a judgement about what a nation of freed slaves could survive in its first week, and it is one of the few places in the account where you are told the reasoning outright.",
+    provenance: recorded(ref("exodus", 13, "17-18")),
+    passages: [ref("exodus", 13, "17-18")],
+    related: ["etham"],
+  },
+  {
+    id: "josephs-bones-note",
+    title: "Joseph's bones",
+    kind: "object",
+    note: "Moses takes Joseph's bones out of Egypt with him, because Joseph made the sons of Israel swear to it: God will surely visit you, and you shall carry my bones up from here. Joseph died at the end of Genesis. Between that promise and this morning are the four hundred years of Exodus 12:40. Somebody kept it. Nobody is named for keeping it. It is one line in the middle of an evacuation, and it is the longest-running promise in the book.",
+    provenance: recorded(ref("exodus", 13, "19")),
+    passages: [ref("exodus", 13, "19")],
+    related: ["etham"],
+  },
+  {
+    id: "the-pillar-note",
+    title: "The pillar of cloud and fire",
+    kind: "note",
+    note: "A pillar of cloud by day and a pillar of fire by night, going in front of the people so that they could travel by either. The account is emphatic that it did not depart from before them — not on this leg and not for the rest of the wilderness. Two things are worth noticing. It leads rather than carries: they still walk every step. And it means the column can move at night, which is why the days in this game do not simply stop at dusk once you have seen it.",
+    provenance: recorded(ref("exodus", 13, "21-22")),
+    passages: [ref("exodus", 13, "21-22")],
+    related: ["etham", "the-crossing-note"],
+  },
+  {
+    id: "pi-hahiroth",
+    title: "Pi-hahiroth",
+    kind: "waypoint",
+    note: "The third camp, and the one that makes no sense until afterwards. Israel is told to turn back and camp before Pi-hahiroth, between Migdol and the sea, opposite Baal Zephon. Numbers records the turn; Exodus gives the reason, and the reason is that Pharaoh should look at their position and conclude they are entangled in the land and shut in by the wilderness. In other words, the camp is bait, and the people camping in it are not told. None of these three places has been identified with any confidence.",
+    provenance: recorded(ref("numbers", 33, "7"), ref("exodus", 14, "2-3")),
+    passages: [ref("numbers", 33, "7"), ref("exodus", 14, "1-4")],
+    related: ["etham", "how-far-was-it", "pharaohs-change-of-mind"],
+  },
+  {
+    id: "pharaohs-change-of-mind",
+    title: "Six hundred chariots",
+    kind: "event",
+    note: "Pharaoh is told the people have fled, and he and his servants change their minds about having let them go — what is this we have done, that we have let Israel go from serving us? He takes six hundred chosen chariots and all the chariots of Egypt after them, and overtakes Israel camped by the sea. The detail worth holding on to is that this is the same Pharaoh who a few days earlier called for Moses in the night and told them to get out. The account presents the reversal without softening it.",
+    provenance: recorded(ref("exodus", 14, "5-7"), ref("exodus", 14, "9")),
+    passages: [ref("exodus", 14, "5-9")],
+    related: ["pi-hahiroth", "the-crossing-note"],
+  },
+  {
+    id: "the-far-shore",
+    title: "The far shore",
+    kind: "waypoint",
+    note: "Numbers 33:8 puts the crossing and what followed into a single sentence: they departed from before Hahiroth, passed through the middle of the sea into the wilderness, went three days' journey in the wilderness of Etham, and camped at Marah. This game splits that sentence into two legs, because the crossing and Marah are two entirely different things to live through and one stage cannot hold both. The camps either side of them are recorded. The line drawn between them is ours.",
+    provenance: reasoned(
+      "Numbers 33:8 records the crossing, the three days' journey and the arrival at Marah as one stage; splitting it into two legs is the game's decision, made so that the crossing and Marah can each be played properly.",
+      ref("numbers", 33, "8"),
+    ),
+    passages: [ref("numbers", 33, "8")],
+    related: ["the-crossing-note", "how-far-was-it"],
+  },
+];

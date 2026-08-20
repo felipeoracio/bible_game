@@ -110,6 +110,8 @@ export function validateEpisode(episode: Episode): ValidationIssue[] {
 
   /** Every Codex entry has to be reachable by playing; see the check after the legs. */
   const unlockedSomewhere = new Set<string>();
+  /** Set pieces no leg reaches, like events no leg references, are invisible in play. */
+  const reachedSetPieces = new Set<string>();
 
   // --- Events ---------------------------------------------------------------
   for (const [id, event] of Object.entries(episode.events)) {
@@ -229,6 +231,20 @@ export function validateEpisode(episode: Episode): ValidationIssue[] {
       unlockedSomewhere.add(id);
     }
     if (!episode.quizzes[leg.quiz]) error(where, `quiz "${leg.quiz}" does not exist.`);
+
+    if (leg.setPiece) {
+      const slotWhere = `${where} > setPiece:${leg.setPiece.setPieceId}`;
+      if (!episode.setPieces[leg.setPiece.setPieceId]) {
+        error(slotWhere, "points at an unknown set piece.");
+      }
+      if (leg.setPiece.atProgress < 0 || leg.setPiece.atProgress > 1) {
+        error(
+          slotWhere,
+          `fires at progress ${leg.setPiece.atProgress}, which is outside 0 to 1.`,
+        );
+      }
+      reachedSetPieces.add(leg.setPiece.setPieceId);
+    }
   }
 
   for (const id of Object.keys(episode.events)) {
@@ -302,6 +318,12 @@ export function validateEpisode(episode: Episode): ValidationIssue[] {
     for (const codexId of piece.unlocks ?? []) {
       if (!episode.codex[codexId]) error(where, `unlocks unknown Codex entry "${codexId}".`);
       unlockedSomewhere.add(codexId);
+    }
+  }
+
+  for (const id of Object.keys(episode.setPieces)) {
+    if (!reachedSetPieces.has(id)) {
+      warn(`setpiece:${id}`, "is never reachable — no leg reaches it.");
     }
   }
 

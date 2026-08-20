@@ -22,9 +22,20 @@ describe("the shipped content", () => {
     expect(failures, failures.map((f) => `${f.where}: ${f.message}`).join("\n")).toHaveLength(0);
   });
 
-  it("has no warnings either", () => {
+  /**
+   * Three set pieces are authored and not yet reachable, because the legs that
+   * reach them (5, 11 and 12) are still to be written. That is a true and useful
+   * warning, so it is allowed by name rather than silenced — any *other* warning
+   * still fails, and these three go away as F14 lands the remaining legs.
+   */
+  it("warns about nothing except the set pieces still waiting for their legs", () => {
+    const pending = ["setpiece:marah", "setpiece:rephidim", "setpiece:jethro"];
     const warnings = validateEpisode(episode1).filter((i) => i.level === "warning");
-    expect(warnings, warnings.map((w) => `${w.where}: ${w.message}`).join("\n")).toHaveLength(0);
+    const unexpected = warnings.filter((w) => !pending.includes(w.where));
+    expect(unexpected, unexpected.map((w) => `${w.where}: ${w.message}`).join("\n")).toHaveLength(
+      0,
+    );
+    for (const w of warnings) expect(w.message).toMatch(/never reachable/);
   });
 
   it("resolves every citation to real bundled text", () => {
@@ -90,7 +101,9 @@ describe("the validator rejects mis-tagged content", () => {
 
   it("catches a Codex entry linking to nothing", () => {
     const issues = broken((episode) => {
-      episode.codex["succoth"]!.related = ["etham"];
+      // Deliberately not a real id. "etham" used to serve here and became a real
+      // Codex entry when leg 2 was written, which quietly emptied this test out.
+      episode.codex["succoth"]!.related = ["a-camp-that-does-not-exist"];
     });
     expect(messagesFor(issues, "codex:succoth").join(" ")).toContain("unknown Codex entry");
   });
