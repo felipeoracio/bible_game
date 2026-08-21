@@ -8,6 +8,7 @@ import EventOverlay from "./EventOverlay";
 import QuizScreen from "./QuizScreen";
 import WaypointScreen from "./WaypointScreen";
 import SetPieceScreen from "./SetPieceScreen";
+import SettingOut from "./SettingOut";
 import GameCanvas from "./GameCanvas";
 import Hud from "./Hud";
 import PartyPanel from "./PartyPanel";
@@ -23,10 +24,13 @@ import { useGame } from "@/state/store";
  */
 export default function PlayScreen() {
   const [camping, setCamping] = useState(false);
+  const [settingOut, setSettingOut] = useState(false);
+  const nextLeg = useGame((s) => s.nextLeg);
   const rehydrate = useGame((s) => s.rehydrate);
   // The leg actually being walked, not the first one — there are several now.
   const legId = useGame((s) => s.state.legId);
-  const leg = episode1.legs.find((candidate) => candidate.id === legId);
+  const legIndex = episode1.legs.findIndex((candidate) => candidate.id === legId);
+  const leg = legIndex >= 0 ? episode1.legs[legIndex] : undefined;
 
   /*
    * Pick the run back up after a refresh. The store lives in memory, so without
@@ -55,7 +59,7 @@ export default function PlayScreen() {
       </header>
 
       <GameCanvas />
-      <Hud onMakeCamp={() => setCamping(true)} />
+      <Hud onMakeCamp={() => setCamping(true)} onSetOut={() => setSettingOut(true)} />
       <PartyPanel />
 
       {/*
@@ -68,6 +72,22 @@ export default function PlayScreen() {
       {/* The checkpoint follows the arrival entry, once it has been read. */}
       <QuizScreen />
       {camping && <CampScreen onClose={() => setCamping(false)} />}
+      {/*
+        The map between legs. Shown before the household moves, so pressing "set
+        out" is a decision the player watches happen rather than a state change
+        they discover afterwards.
+      */}
+      {settingOut && legIndex >= 0 && (
+        <SettingOut
+          legIndex={legIndex + 1}
+          onBegin={() => {
+            nextLeg();
+            setSettingOut(false);
+          }}
+          onCancel={() => setSettingOut(false)}
+        />
+      )}
+
       <SetPieceScreen />
     </main>
   );

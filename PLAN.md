@@ -223,6 +223,26 @@ that same twelve-stop list, and putting it in the Codex would show a player a ro
 two camps the text names, immediately beside a game that walks all of them. The ribbon
 carries the itinerary; the drawn map does not.
 
+**The ribbon is also a beat, not only a reference.** `src/ui/SettingOut.tsx` opens when the
+player presses "set out": the strip slides one camp under a fixed marker over 1.6 seconds,
+the destination lights up as it arrives, and the leg's distance is shown with its tier tag
+and its reasoning. That last part is the point of putting it here — it is the one moment the
+player is actually thinking about how far it is, so it is where "the camps are recorded and
+this number is not" lands hardest. `prefers-reduced-motion` turns the slide into a cut.
+
+Three things that had to be got right, all found by watching it fail rather than by reading
+it. The offset is measured in pixels, because a transition between two `calc()` values
+carrying a percentage does not interpolate. The measurement happens in `useLayoutEffect`,
+before paint. And the strip is not mounted at all until the window around it is measured —
+otherwise React commits the corrected offset and switches the transition on in the same
+paint, and the browser animates the correction, so the strip flies in from off-screen
+instead of stepping one camp.
+
+Also worth keeping: on this screen every camp at or behind the one being left reads as
+reached by definition. You cannot set out from Succoth without having got to Succoth, so the
+Codex is no longer the only witness and a waypoint that failed to open cannot make the road
+behind you look unwalked.
+
 **A redraw is specified in `docs/map-art-brief.md`** — the corrected thirteen stops, what
 each medallion should show and where it is recorded, and the technical notes. Three changes
 from the delivered art: add Pi-hahiroth, add Elim, and make the last stop the wilderness of

@@ -17,9 +17,9 @@ import { useGame } from "@/state/store";
  */
 
 /** Pixel geometry of the sliced sheet — see `scripts/import-map-ribbon.py`. */
-const CELL_W = 84;
-const CELL_H = 96;
-const CELLS = 13;
+export const CELL_W = 84;
+export const CELL_H = 96;
+export const CELLS = 13;
 
 /**
  * Which cell of the delivered ribbon belongs to which camp.
@@ -33,7 +33,7 @@ const CELLS = 13;
  * Pi-hahiroth has no such source and renders as an empty frame, which is the honest
  * way to show art nobody has drawn.
  */
-const MEDALLION: Record<string, number> = {
+export const MEDALLION: Record<string, number> = {
   rameses: 0,
   "leg-01-rameses-succoth": 1, // Succoth
   "leg-02-succoth-etham": 2, // Etham
@@ -49,7 +49,7 @@ const MEDALLION: Record<string, number> = {
   "leg-12-sinai": 10, // the wilderness of Sinai
 };
 
-interface Stop {
+export interface Stop {
   key: string;
   label: string;
   cell: number | undefined;
@@ -57,7 +57,7 @@ interface Stop {
   current: boolean;
 }
 
-function Medallion({ stop }: { stop: Stop }) {
+export function Medallion({ stop }: { stop: Stop }) {
   const tone = stop.current
     ? "border-terracotta"
     : stop.reached

@@ -18,7 +18,14 @@ const PACE_LABEL: Record<Pace, string> = {
  * The React half of the render. It reads the same simulation state the canvas
  * does, which is the point of Feature 1: one source of truth, two renderers.
  */
-export default function Hud({ onMakeCamp }: { onMakeCamp: () => void }) {
+export default function Hud({
+  onMakeCamp,
+  onSetOut,
+}: {
+  onMakeCamp: () => void;
+  /** Opens the map. Advancing the leg is the map's job, not the button's. */
+  onSetOut: () => void;
+}) {
   // Primitive selectors only — returning a fresh object here would re-render on
   // every dispatch.
   const day = useGame((s) => s.state.day);
@@ -33,7 +40,6 @@ export default function Hud({ onMakeCamp }: { onMakeCamp: () => void }) {
   const lagKm = useGame((s) => s.state.lagKm);
   const nightsCamped = useGame((s) => s.state.nightsCamped);
   const dispatch = useGame((s) => s.dispatch);
-  const nextLeg = useGame((s) => s.nextLeg);
 
   /** Set once the itinerary runs out, which for Episode 1 means Sinai. */
   const [atSinai, setAtSinai] = useState(false);
@@ -155,7 +161,10 @@ export default function Hud({ onMakeCamp }: { onMakeCamp: () => void }) {
           <button
             type="button"
             onClick={() => {
-              if (!nextLeg()) setAtSinai(true);
+              // Nothing left on the itinerary: say so instead of opening a map
+              // of a road that does not continue.
+              if (legAt >= 0 && episode1.legs[legAt + 1]) onSetOut();
+              else setAtSinai(true);
             }}
             className="text-pixel-sm border-2 border-terracotta bg-terracotta px-3 py-1.5 uppercase tracking-widest text-linen transition-opacity hover:opacity-90"
           >
