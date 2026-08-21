@@ -19,16 +19,19 @@ import { useGame } from "@/state/store";
 /** Pixel geometry of the sliced sheet — see `scripts/import-map-ribbon.py`. */
 const CELL_W = 84;
 const CELL_H = 96;
-const CELLS = 12;
+const CELLS = 13;
 
 /**
  * Which cell of the delivered ribbon belongs to which camp.
  *
  * The art was drawn against a slightly different list from the itinerary the game
  * walks: it has no Pi-hahiroth and no Elim — both recorded camps, Numbers 33:7 and
- * 33:9 — and ends on Mount Sinai, which is past where this episode stops. So two
- * stops here have no medallion of their own and render as an empty frame, which is
- * the honest way to show art that has not been drawn yet.
+ * 33:9 — and ends on Mount Sinai, which is past where this episode stops.
+ *
+ * Elim is filled from leg 7's panorama, whose left end the artist painted as Elim,
+ * so that cell is a picture of the place rather than something that looks like it.
+ * Pi-hahiroth has no such source and renders as an empty frame, which is the honest
+ * way to show art nobody has drawn.
  */
 const MEDALLION: Record<string, number> = {
   rameses: 0,
@@ -37,7 +40,7 @@ const MEDALLION: Record<string, number> = {
   // leg 3 — Pi-hahiroth — not on the delivered map
   "leg-04-the-crossing": 3, // the Red Sea crossing
   "leg-05-marah": 4, // Marah
-  // leg 6 — Elim — not on the delivered map
+  "leg-06-elim": 12, // composited from the Elim end of leg 7's panorama
   "leg-07-red-sea": 5, // by the sea
   "leg-08-wilderness-of-sin": 6,
   "leg-09-dophkah": 7,

@@ -212,10 +212,22 @@ twelve springs and seventy palms — and it ends on Mount Sinai, which is past w
 episode stops. The itinerary is the faithful one, so the ribbon follows it and those two
 stops render as empty frames marked "not yet drawn".
 
+**Elim's medallion is filled from leg 7's panorama**, whose left end the artist painted as
+Elim — palms and standing water — composited inside a delivered gold ring by the same
+slicer. The rule that made that legitimate, and worth keeping: the source has to *depict
+the place*, not merely resemble it. **Pi-hahiroth** has no such source and stays an empty
+frame; a generic shoreline would have looked finished and been wrong.
+
 The framed map above the medallions is deliberately **not** shipped. Its drawn route is
 that same twelve-stop list, and putting it in the Codex would show a player a route missing
 two camps the text names, immediately beside a game that walks all of them. The ribbon
-carries the itinerary; the drawn map does not. The Codex "read more" on terms inside camp and
+carries the itinerary; the drawn map does not.
+
+**A redraw is specified in `docs/map-art-brief.md`** — the corrected thirteen stops, what
+each medallion should show and where it is recorded, and the technical notes. Three changes
+from the delivered art: add Pi-hahiroth, add Elim, and make the last stop the wilderness of
+Sinai rather than Mount Sinai, since Exodus 19:2 camps Israel *before* the mountain and the
+mountain is not itself a camp. With that in hand the framed map can ship as well. The Codex "read more" on terms inside camp and
 event prose is still outstanding — entries link to each other, but the body text does not
 yet carry inline links.
 

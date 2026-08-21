@@ -22,7 +22,7 @@ drawn map does not.
 Usage:  python scripts/import-map-ribbon.py
 """
 
-from PIL import Image
+from PIL import Image, ImageDraw
 
 SOURCE = "assets/game_map.png"
 SHEET_OUT = "public/art/map-ribbon.webp"
@@ -31,6 +31,25 @@ SHEET_OUT = "public/art/map-ribbon.webp"
 BAND_TOP, BAND_BOTTOM = 722, 845
 # Height each medallion is normalised to in the sheet.
 CELL = 96
+
+"""
+Medallions built from leg artwork rather than delivered on the map.
+
+The rule these follow, and it is worth keeping: the source panorama must actually
+*depict the place*, not merely resemble it. Leg 7 runs Elim to the Red Sea and its
+left end is painted as Elim — palms and standing water — so an Elim medallion cut
+from there is a picture of Elim. Pi-hahiroth has no such source and is deliberately
+left undrawn rather than filled with a generic shoreline.
+
+Each entry is (source webp, crop box, why it is legitimate).
+"""
+DERIVED = [
+    (
+        "public/art/leg-07-red-sea.webp",
+        (40, 0, 355, 360),
+        "the Elim end of the Elim-to-the-Red-Sea panorama",
+    ),
+]
 
 
 def medallion_columns(px, width):
@@ -68,13 +87,28 @@ def main():
 
     columns = medallion_columns(px, width)
     if len(columns) != 12:
-        raise SystemExit(f"expected 12 medallions, found {len(columns)}")
+        raise SystemExit(f"expected 12 medallions on the map, found {len(columns)}")
 
     cells = []
     for left, right in columns:
         cell = im.crop((left, BAND_TOP, right, BAND_BOTTOM))
         scale = CELL / cell.size[1]
         cells.append(cell.resize((round(cell.size[0] * scale), CELL), Image.LANCZOS))
+
+    # Medallions composited from leg art, reusing a delivered gold ring so they sit
+    # beside the painted ones without looking bolted on.
+    ring = im.crop((columns[0][0], BAND_TOP, columns[0][1], BAND_BOTTOM))
+    ring = ring.resize((round(ring.size[0] * CELL / ring.size[1]), CELL), Image.LANCZOS)
+    inner = Image.new("L", ring.size, 0)
+    # An ellipse inset from the ring, so the gold edge itself is never overwritten.
+    ImageDraw.Draw(inner).ellipse(
+        (9, 9, ring.size[0] - 9, ring.size[1] - 9), fill=255
+    )
+    for source, box, _why in DERIVED:
+        scene = Image.open(source).convert("RGB").crop(box).resize(ring.size, Image.LANCZOS)
+        cell = ring.copy()
+        cell.paste(scene, (0, 0), inner)
+        cells.append(cell)
 
     # A uniform cell width keeps the windowing arithmetic in the interface trivial.
     cell_w = max(c.size[0] for c in cells)
