@@ -107,7 +107,21 @@ consumed exactly as the leg is walked, so you set out at its left edge and arriv
 right edge as you reach the camp. Legs without art fall back to generated layers, so
 legs 2–12 stay playable before their art exists.
 
-Brief for the remaining eleven backdrops:
+**Nine of twelve legs are painted.** Delivered art is imported with
+`python scripts/import-backdrops.py <source.png> <out.webp>`, which finds the artwork
+inside its white matting, steps past the anti-aliased rows against the border, and exports
+at exactly 360px tall. Auto-detection rather than a fixed crop, because the inset varies:
+across the eight imported files the art band ranged 343 to 432 rows. The script reproduces
+the hand-tuned Leg 1 crop exactly, which is how it was validated.
+
+Still on generated scenery: **legs 3, 4 and 6.** Legs 3 and 4 (Etham → Pi-hahiroth, and the
+crossing) have only a 335×97 thumbnail — `backgroud_etham_red_sea_crossing.png` is too small
+to use. Leg 6 (Marah → Elim) has no art at all, because `background_marah_by_the_sea.png`
+turned out to be Elim → the Red Sea rather than Marah → Elim: it opens on palms and pools
+and ends at the water, and palms and springs are Elim's detail, not Marah's. It is wired to
+leg 7 accordingly.
+
+Brief for the remaining backdrops:
 - **One continuous panorama per leg**, exported at exactly the canvas height (360px) so
   Phaser draws it at scale 1.0 and never resamples it. Width is free: the scroll factor
   is `min((width − 640) / (legDistanceKm × 200), 1)`, so **any** panorama narrower than

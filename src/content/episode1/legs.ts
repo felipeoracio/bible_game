@@ -46,6 +46,7 @@ export const legs: Leg[] = [
       ref("numbers", 33, "6"),
     ),
     terrain: "coastal-sand",
+    backdrop: "/art/leg-02-succoth-etham.webp",
     scripted: [
       { eventId: "the-long-way-round", atProgress: 0.15 },
       { eventId: "josephs-bones", atProgress: 0.5 },
@@ -117,6 +118,7 @@ export const legs: Leg[] = [
       ref("numbers", 33, "8"),
     ),
     terrain: "open-desert",
+    backdrop: "/art/leg-05-marah.webp",
     scripted: [
       { eventId: "the-song-at-the-sea", atProgress: 0.02 },
       { eventId: "the-first-dry-day", atProgress: 0.3 },
@@ -162,6 +164,7 @@ export const legs: Leg[] = [
       ref("numbers", 33, "10"),
     ),
     terrain: "coastal-sand",
+    backdrop: "/art/leg-07-red-sea.webp",
     scripted: [
       { eventId: "the-quiet-leg", atProgress: 0.35 },
       { eventId: "counting-the-days", atProgress: 0.75 },
@@ -183,6 +186,7 @@ export const legs: Leg[] = [
       ref("exodus", 16, "1"),
     ),
     terrain: "open-desert",
+    backdrop: "/art/leg-08-wilderness-of-sin.webp",
     scripted: [
       { eventId: "the-flesh-pots-of-egypt", atProgress: 0.45 },
       { eventId: "bread-from-the-sky", atProgress: 0.8 },
@@ -209,6 +213,7 @@ export const legs: Leg[] = [
       ref("numbers", 33, "12"),
     ),
     terrain: "rocky-wadi",
+    backdrop: "/art/leg-09-dophkah.webp",
     scripted: [
       { eventId: "the-sixth-day", atProgress: 0.2 },
       { eventId: "the-seventh-day", atProgress: 0.7 },
@@ -230,6 +235,7 @@ export const legs: Leg[] = [
       ref("numbers", 33, "13"),
     ),
     terrain: "rocky-wadi",
+    backdrop: "/art/leg-10-alush.webp",
     scripted: [
       { eventId: "a-place-with-only-a-name", atProgress: 0.25 },
       { eventId: "the-second-week", atProgress: 0.7 },
@@ -250,6 +256,7 @@ export const legs: Leg[] = [
       ref("numbers", 33, "14"),
     ),
     terrain: "rocky-wadi",
+    backdrop: "/art/leg-11-rephidim.webp",
     scripted: [
       { eventId: "no-water-at-rephidim", atProgress: 0.4 },
       // One choice only, so the water cannot be a reward for choosing well.
@@ -277,6 +284,7 @@ export const legs: Leg[] = [
       ref("exodus", 19, "1"),
     ),
     terrain: "mountain-approach",
+    backdrop: "/art/leg-12-sinai.webp",
     scripted: [
       { eventId: "jethro-arrives", atProgress: 0.25 },
       { eventId: "the-mountain", atProgress: 0.72 },
