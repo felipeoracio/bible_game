@@ -194,8 +194,28 @@ what, so meeting Hotep is what makes the mixed-multitude entry readable. The val
 now fails the build on a Codex entry nothing can ever unlock — content that reads
 perfectly in the source and is invisible in play is worse than content that is missing.
 
-Map position is the itinerary index ("Camp 1 of 12"), not a drawn map; `map_overworld.png`
-is staged for a proper map ribbon later. The Codex "read more" on terms inside camp and
+**Map ribbon — ✅ built.** `src/ui/MapRibbon.tsx` sits at the head of the Codex: thirteen
+stops, Rameses and the twelve camps, with medallions sliced out of `game_map.png` by
+`scripts/import-map-ribbon.py`. Reached is read from `unlockedCodex` rather than a separate
+counter — a camp's waypoint entry opens on arrival, so "have I been here" already had one
+answer in the game. Three states, because two were not enough: reached in full colour, the
+camp being walked to only part dimmed so it draws the eye, everything ahead heavily dimmed
+but still listed, for the same reason locked Codex entries show their titles.
+
+The twelve medallions are windowed out of one sprite sheet with `background-position`, so
+the ribbon costs one request rather than twelve. The slicer finds the medallion columns
+rather than hardcoding them, and filters the scroll arrows out by width against the median.
+
+**The delivered map is drawn against a different list from the one the game walks.** It has
+no Pi-hahiroth and no Elim — both recorded camps, Numbers 33:7 and 33:9, Elim being the
+twelve springs and seventy palms — and it ends on Mount Sinai, which is past where this
+episode stops. The itinerary is the faithful one, so the ribbon follows it and those two
+stops render as empty frames marked "not yet drawn".
+
+The framed map above the medallions is deliberately **not** shipped. Its drawn route is
+that same twelve-stop list, and putting it in the Codex would show a player a route missing
+two camps the text names, immediately beside a game that walks all of them. The ribbon
+carries the itinerary; the drawn map does not. The Codex "read more" on terms inside camp and
 event prose is still outstanding — entries link to each other, but the body text does not
 yet carry inline links.
 
@@ -608,7 +628,7 @@ them into `public/art/`, scaled for the 640×360 canvas, and committed there.
 | `ui_hud_elements`, `buttons`, `event_icons` | F5–F7 as each screen lands |
 | `items_inventory_icons`, `game_objects_interactables` | F9/F10 — water and manna |
 | `enemies_hazards` | F12 — Rephidim |
-| `map_overworld` | F7 — the Codex map ribbon |
+| `map_overworld` | superseded by `game_map.png`, which the ribbon uses |
 | `effects`, `animation_examples`, `tileset` | F12/F15 — set pieces and the art pass |
 
 The character sheets are drawn **front-facing**, not in side profile. The design doc

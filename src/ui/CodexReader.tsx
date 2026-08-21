@@ -6,6 +6,7 @@ import { episode1 } from "@/content/episode1";
 import { accuracy } from "@/sim/systems/quiz";
 import { useGame } from "@/state/store";
 import CodexEntryView from "./CodexEntryView";
+import MapRibbon from "./MapRibbon";
 
 /**
  * The Codex, readable outside of play.
@@ -58,6 +59,9 @@ export default function CodexReader() {
           Back
         </Link>
       </header>
+
+      {/* The itinerary, before the entries that explain it. */}
+      <MapRibbon />
 
       {unlocked.length === 0 && (
         <p className="frame frame-parchment frame-slim text-pixel-sm">
